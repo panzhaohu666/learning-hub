@@ -187,8 +187,6 @@ print(f"\n真实参数: w={true_w}, b={true_b}")
 plt.tight_layout()
 plt.savefig('linear_regression.png')
 plt.show()
-```python
-```
 
 > 🧪 **实验时间**（必须做！这是理解的关键）：
 >
@@ -343,9 +341,7 @@ if epoch % 200 == 0:
 ```python
 print(f"最终参数: w={w.flatten()}, b={b:.4f}")
     print(f"决策边界: {w[0][0]:.2f}x₁ + {w[1][0]:.2f}x₂ + {b:.2f} = 0")
-    ```
-```
-
+    
 > 🧪 **实验时间**：
 > **实验 1：决策边界可视化**
 > 把 `w[0]*x₁ + w[1]*x₂ + b = 0` 这条线画在散点图上——你会看到它完美地把两类数据分开。
@@ -396,6 +392,7 @@ IG = H(父) - Σ (|子|/|父|) × H(子)
 > 💡 **Aha Moment**：决策树不是在"学"一个公式——它是在"问问题"。每个节点是一个 if-else 判断，整棵树就是一堆嵌套的 if-else。你完全可以把它翻译成 Python 代码：`if feature_1 > 3.5: if feature_2 < 1.2: return "猫" else: return "狗"`
 
 > ⚠️ **常见陷阱**：如果不限制深度，决策树会把每个训练样本都"记住"——每个叶子节点一个样本 → 训练准确率 100%，测试准确率惨不忍睹。这就是过拟合。解决方案：限制 max_depth、min_samples_split，或者用随机森林。
+```
 
 ### 手机摸鱼 · 星期四上午
 阅读主题：随机森林
@@ -417,12 +414,12 @@ IG = H(父) - Σ (|子|/|父|) × H(子)
 
 ### 电脑 · 星期三+星期四晚上
 用 sklearn 实战：
-```
-```python
+python
   from sklearn.tree import DecisionTreeClassifier
   from sklearn.ensemble import RandomForestClassifier
   from sklearn.model_selection import train_test_split, cross_val_score
   from sklearn.metrics import classification_report, confusion_matrix
+```
 ```
 
 # 加载数据集
@@ -451,9 +448,7 @@ for name, importance in zip(data.feature_names, rf.feature_importances_):
 if importance > 0.03:
 ```python
 print(f"  {name}: {importance:.4f}")
-  ```
-```
-
+  
 - [ ] 今日完成检查
 - [ ] 决策树和随机森林代码跑通
 - [ ] 能解释信息熵和信息增益
@@ -500,16 +495,17 @@ F1 = 2×P×R / (P+R)       —— 精确率和召回率的调和平均
 > ✅ **Self-Check**：
 > 1. "所有预测为正" → 召回率 = ?  精确率 = ?（取决于真实正样本比例）
 > 2. 机场安检（找危险品）该追求精确率还是召回率？
+```
 
 ### 星期六 · 3.5h
 完整 ML Pipeline
-```
-```python
+python
   # ml_pipeline.py —— 从数据到模型评估的完整流程
   from sklearn.pipeline import Pipeline
   from sklearn.preprocessing import StandardScaler
   from sklearn.ensemble import RandomForestClassifier
   from sklearn.model_selection import GridSearchCV
+```
 ```
 
 # 1 个完整 Pipeline
@@ -532,8 +528,6 @@ grid.fit(X_train, y_train)
 print(f"最佳参数: {grid.best_params_}")
 print(f"最佳分数: {grid.best_score_:.4f}")
 print(f"测试集分数: {grid.score(X_test, y_test):.4f}")
-```python
-```
 
 > 🏆 **Pipeline 的价值**：把"数据预处理 → 模型训练 → 评估"串成一条流水线。这样你不会在测试集上不小心用到训练集的统计信息（数据泄露），这是 ML 项目中最容易犯的错误之一。
 
@@ -650,8 +644,6 @@ inertias.append(np.sum((X - km.centroids[km.labels_])**2))
 plt.plot(range(1, 9), inertias, 'bo-')
 plt.xlabel('K'); plt.ylabel('Inertia')
 plt.savefig('elbow_method.png')
-```python
-```
 
 > 🎉 手写 K-Means 完成！你实现了一个被 Spotify 用来分组用户音乐品味、被电商用来做用户分群的算法。
 
@@ -738,10 +730,9 @@ print(f"{name}: 训练 R²={train_r2:.3f}, 测试 R²={test_r2:.3f}")
       # 预期：无正则化 → 训练 R² 很高但测试很低（严重过拟合）
       #       L2 → 过拟合缓解
       #       L1 → 很多系数为 0
-  ```
-```
-
+  
 > 🧪 观察 Lasso 的系数：大部分变成了精确的 0！这就是 L1 的"特征选择"魔力。
+```
 
 ### 第9周 · 星期三：特征工程
 ---
@@ -774,13 +765,13 @@ TF-IDF：词频 × 逆文档频率
 这个词对本文档很重要。
 
 ### 晚上电脑
-```
-```python
+python
   from sklearn.preprocessing import StandardScaler, MinMaxScaler, OneHotEncoder, LabelEncoder
   from sklearn.feature_extraction.text import TfidfVectorizer
   from sklearn.compose import ColumnTransformer
   from sklearn.pipeline import Pipeline
   import pandas as pd
+```
 ```
 
 # 模拟混合类型数据
@@ -804,8 +795,6 @@ preprocessor = ColumnTransformer([
 X_processed = preprocessor.fit_transform(df)
 print(f"处理后形状: {X_processed.shape}")
 print(f"One-Hot 后的城市列: {preprocessor.named_transformers_['cat_onehot'].get_feature_names_out()}")
-```python
-```
 
 ### 第9周 · 星期四：过拟合诊断 + 学习曲线
 ---
@@ -869,8 +858,6 @@ plot_learning_curve(overfit_model, X, y, '严重过拟合')
 # 正则化后
 regularized_model = make_pipeline(PolynomialFeatures(15), Ridge(alpha=0.1))
 plot_learning_curve(regularized_model, X, y, 'L2正则化后')
-```python
-```
 
 - [ ] 今日完成检查
 - [ ] 能画出学习曲线并判断过拟合/欠拟合
@@ -965,19 +952,18 @@ reshape 不要求（更安全，推荐先多用 reshape）
 ```python
      device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
      tensor = torch.randn(3, 4, device=device)  # 直接在目标设备上创建
-     ```
-```
-
+     
 > ⚠️ **常见陷阱**：Tensor 在 CPU 上，模型在 GPU 上 → 报错。所有参与计算的 tensor 必须在同一个 device 上。养成习惯：模型和数据一创建就 `.to(device)`。
 
 > ✅ **Self-Check**：np.mean(arr, axis=1) 等价于 torch.mean(tensor, ___)？
+```
 
 ### 晚上电脑 · 2 小时
 建文件 pytorch_tensor_workout.py，和 NumPy 练习对照做：
 
-```
-```python
+python
   import torch
+```
 ```
 
 # ----- 创建 -----
@@ -1021,9 +1007,7 @@ a_gpu = a.to('cuda')
 ```python
 print("在GPU上:", a_gpu.device)
       a_cpu = a_gpu.to('cpu')  # 移回来
-  ```
-```
-
+  
 重要：把上面的每一个操作都亲手敲一遍，
 形成肌肉记忆。不要复制粘贴！
 
@@ -1081,8 +1065,7 @@ w ────────────────────┘
 
 **3. requires_grad 和 backward()**
 
-```
-```python
+python
      x = torch.tensor(2.0, requires_grad=True)
      y = x ** 2 + 3 * x + 1  # y = x² + 3x + 1
 ```
@@ -1090,12 +1073,9 @@ w ────────────────────┘
 ```python
 y.backward()            # 自动计算 dy/dx
      print(x.grad)           # dy/dx = 2x + 3 = 2*2 + 3 = 7
-     ```
-```
-
+     
 训练时：
-```
-```python
+python
      for epoch in range(epochs):
          # 前向传播
          loss = compute_loss(model(X), y)
@@ -1113,9 +1093,7 @@ y.backward()            # 自动计算 dy/dx
              b -= lr * b.grad
              w.grad.zero_()           # 清零梯度！忘记这步会累加
              b.grad.zero_()
-     ```
-```
-
+     
 > 🧠 **训练循环的 5 步心法（背下来，变成肌肉记忆！）**
 >
 > 这就是后面所有模型训练的核心。不管你训练的是 MLP 还是 GPT-4：
@@ -1146,13 +1124,14 @@ y.backward()            # 自动计算 dy/dx
 > ✅ **Self-Check**：
 > 1. `.backward()` 之后，梯度存在哪里？（存在 `.grad` 属性里）
 > 2. 如果连续两次 `.backward()` 不 `zero_grad()`，x.grad 会怎样？（是两次梯度的和）
+```
 
 ### 晚上电脑 · 2 小时
 任务 1：验证 Autograd 的梯度计算是否正确
 
-```
-```python
+python
   import torch
+```
 ```
 
 # 用第8周的线性回归验证
@@ -1193,8 +1172,6 @@ print(f"Epoch {epoch}: loss={loss.item():.4f}")
 ```
 
 print(f"学习参数: w={w.item():.4f}, b={b.item():.4f}")
-```python
-```
 
 任务 2：验证"梯度累加"现象
 
@@ -1206,13 +1183,10 @@ print(f"学习参数: w={w.item():.4f}, b={b.item():.4f}")
       y.backward()
       print(f"第{i+1}次 backward 后 x.grad = {x.grad}")
       # 输出：2.0, 4.0, 6.0 —— 梯度累加了！
-  ```
-```
-
+  
 任务 3：理解 no_grad() 的作用
 
-```
-```python
+python
   x = torch.tensor(2.0, requires_grad=True)
 ```
 
@@ -1221,9 +1195,7 @@ with torch.no_grad():
 ```python
 y = x ** 2  # 这个操作不会被追踪
   print(y.requires_grad)  # False
-  ```
-```
-
+  
 > 🎉 你现在知道了 PyTorch 最核心的秘密：`requires_grad` 标记哪些需要追踪，`.backward()` 自动算梯度，`.zero_grad()` 清零。这三件套贯穿你后面所有代码。
 
 - [ ] 今日完成检查
@@ -1250,8 +1222,7 @@ y = x ** 2  # 这个操作不会被追踪
 
 **2. 最简单的自定义 Module**
 
-```
-```python
+python
   import torch.nn as nn
 ```
 
@@ -1270,9 +1241,7 @@ def forward(self, x):
           x = self.relu(x)
           x = self.fc2(x)      # (batch, hidden) → (batch, output)
           return x
-  ```
-```
-
+  
 > 💡 **Aha Moment**：`nn.Module` 的设计哲学：`__init__` 定义"有什么层"，`forward` 定义"怎么连起来"。后面所有复杂的模型——CNN、RNN、Transformer——都遵循这个模式。层变复杂了，但结构不变。
 
 **3. 常用层速查**
@@ -1288,27 +1257,24 @@ nn.LSTM(in, hidden)      LSTM
 nn.TransformerEncoder    完整的 Transformer Encoder
 
 **4. Sequential —— 简单的层叠**
-```
-```python
+python
   model = nn.Sequential(
       nn.Linear(784, 256),
       nn.ReLU(),
       nn.Linear(256, 10),
   )
-  ```
-```
-
+  
 > ⚠️ **常见陷阱**：`__init__` 里忘记 `super().__init__()` 是新手排名第一的错误！没有这行，你的 Module 不会注册参数，`model.parameters()` 返回空列表。
 
 > ✅ **Self-Check**：
 > 1. `model.train()` 和 `model.eval()` 影响哪些层的行为？（Dropout 和 BatchNorm）
 > 2. `model.to('cuda')` 移动了什么？（所有参数和 buffer）
+```
 
 ### 晚上电脑 · 2 小时
 任务 1：用 nn.Module 重写线性回归 + 逻辑回归
 
-```
-```python
+python
   class LinearRegressor(nn.Module):
       def __init__(self):
           super().__init__()
@@ -1324,13 +1290,10 @@ def __init__(self, input_dim):
           self.linear = nn.Linear(input_dim, 1)
       def forward(self, x):
           return torch.sigmoid(self.linear(x))
-  ```
-```
-
+  
 任务 2：手写一个和 PyTorch 内置功能等价的模块
 
-```
-```python
+python
   class MyLinear(nn.Module):
       """手写 nn.Linear，理解内部实现"""
       def __init__(self, in_features, out_features):
@@ -1345,6 +1308,7 @@ def forward(self, x):
           # y = x @ W^T + b
           return x @ self.weight.T + self.bias
 ```
+```
 
 # 测试：和官方 nn.Linear 对比
 official = nn.Linear(10, 5)
@@ -1356,8 +1320,6 @@ my.weight.data = official.weight.data.clone()
 my.bias.data = official.bias.data.clone()
 print("官方输出:", official(x))
 print("我的输出:", my(x))
-```python
-```
 
 > 🎉 你现在不仅会用 PyTorch，还能手写它内部的实现！面试问到 "nn.Linear 内部做什么"，你直接把 MyLinear 的代码写出来就行了。
 
@@ -1409,15 +1371,12 @@ for batch_x, batch_y in loader:
 # batch_x: (32, features)
          # batch_y: (32,)
          ...
-     ```
-```
-
+     
 > 💡 **Aha Moment**：Dataset 告诉你"一条数据长什么样"，DataLoader 帮你"批量取、打乱、多线程取"。两者各司其职。你只需要写 Dataset，DataLoader 自动帮你搞定剩下的。
 
 **2. 完整训练循环（模板，背下来！）**
 
-```
-```python
+python
   def train_epoch(model, loader, optimizer, loss_fn, device):
       model.train()
       total_loss = 0
@@ -1449,9 +1408,7 @@ with torch.no_grad():             # 评估时不需要梯度
               total_loss += loss.item()
               correct += (pred.argmax(1) == y).sum().item()
       return total_loss / len(loader), correct / len(loader.dataset)
-  ```
-```
-
+  
 > 🎯 **训练模板的 5 行核心代码**（肌肉记忆）：
 > ```
 > optimizer.zero_grad()   # ① 清
@@ -1465,16 +1422,17 @@ with torch.no_grad():             # 评估时不需要梯度
 > ⚠️ **常见陷阱**：评估时必须 `model.eval()` + `torch.no_grad()`。忘记任何一个：(1) Dropout 仍然在训练模式 → 准确率偏低；(2) 梯度图仍然在构建 → 显存泄漏。
 
 > ✅ **Self-Check**：`optimizer.zero_grad()` 和 `model.zero_grad()` 有什么区别？（optimizer 版本同时清零所有被它管理的参数的梯度，model 版本可能漏掉被外部管理的参数。用 optimizer 版本！）
+```
 
 ### 晚上电脑 · 2 小时
 用上面的模板训练一个 MNIST 分类器：
 
-```
-```python
+python
   import torch.nn as nn
   import torch.optim as optim
   from torchvision import datasets, transforms
   from torch.utils.data import DataLoader
+```
 ```
 
 # 数据加载
@@ -1512,9 +1470,7 @@ train_loss = train_epoch(model, train_loader, optimizer, loss_fn, device)
 test_loss, test_acc = evaluate(model, test_loader, loss_fn, device)
 ```python
 print(f"Epoch {epoch+1}: train_loss={train_loss:.4f}, test_acc={test_acc:.4f}")
-  ```
-```
-
+  
 如果 MNIST 分类器能达到 97%+ 准确率，说明你的训练循环是正确的。
 
 > 🎉 **你刚刚训练了人生第一个神经网络！** MNIST 是深度学习的"Hello World"，而你已经让它达到了 97%+ 的准确率。用第 8 周的知识想想：模型内部在做的是不是 "wx+b → ReLU → wx+b → ReLU → wx+b"？
@@ -1533,8 +1489,7 @@ print(f"Epoch {epoch+1}: train_loss={train_loss:.4f}, test_acc={test_acc:.4f}")
 
 电脑：加 checkpoint + wandb 到 MNIST
 
-```
-```python
+python
   import wandb
   wandb.init(project="mnist-baseline", name="adam-lr0.001")
 ```
@@ -1556,8 +1511,6 @@ print(f"保存最佳模型，准确率: {best_acc:.4f}")
 
 # 加载模型
 model.load_state_dict(torch.load("best_model.pt"))
-```python
-```
 
 ### 星期六 · 3.5h
 调参实验：固定模型，只变超参数，记录效果
@@ -1651,8 +1604,6 @@ print(f"Softmax 差异: {(my_soft - torch_soft).abs().max():.10f}")  # 应接近
 my_loss = my_cross_entropy(logits, targets)
 torch_loss = F.cross_entropy(logits, targets)
 print(f"Loss 差异: {abs(my_loss - torch_loss):.10f}")  # 应接近 0
-```python
-```
 
 ### 第11周 · 星期二：手写 nn.Linear + nn.LayerNorm
 ---
@@ -1704,8 +1655,6 @@ my_ln.beta.data = torch_ln.bias.data.clone()
 output_my = my_ln(x)
 output_torch = torch_ln(x)
 print(f"差异: {(output_my - output_torch).abs().max():.10f}")
-```python
-```
 
 - [ ] 完成检查：手写 Softmax / CrossEntropy / LayerNorm 与官方一致
 ### 第11周 · 星期三-六：CNN + 优化实验
@@ -1751,9 +1700,7 @@ print(f"差异: {(output_my - output_torch).abs().max():.10f}")
           )
       def forward(self, x):
           return self.fc(self.conv(x))
-  ```
-```
-
+  
 > 🎉 **阶段三·上 结束！** 回顾你走过的路：
 > - 第 8 周：手写梯度下降（线性回归 + 逻辑回归）→ 你会推导梯度了
 > - 第 9 周：K-Means、L1/L2 正则化、特征工程、Kaggle → 你有完整 ML 工具箱了
@@ -1776,3 +1723,4 @@ print(f"差异: {(output_my - output_torch).abs().max():.10f}")
 > 现在，深呼吸。进入阶段三·下——**Transformer 在等着你。**
 
 
+```

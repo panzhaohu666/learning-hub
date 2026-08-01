@@ -266,6 +266,7 @@ def forward(self, x):
               return x * mask / (1 - self.p)  # 除以 (1-p) 补偿
           return x
 ```
+```
 
 # 验证 train/eval 模式的区别
 drop = MyDropout(p=0.5)
@@ -320,6 +321,7 @@ Xavier 初始化 vs Kaiming 初始化 vs 随机小值
     ```
 
 > 🔥 **Warmup 的直觉**：训练刚开始时，参数是随机的，梯度可能非常大。如果直接用目标学习率，一步就"迈出大气层"。Warmup 让学习率从 0 慢慢涨到目标值——给模型一个"热身"的机会。这个技巧在训练 Transformer 时**几乎是必须的**。
+```
 
 ### 星期五
 混合精度训练（AMP）
@@ -494,6 +496,7 @@ Adam 优化器占用 = 模型参数的 2 倍（m 和 v 两个状态）
   print(torch.cuda.memory_summary())  # 详细显存报告
   print(f"已分配: {torch.cuda.memory_allocated()/1e9:.2f} GB")
   print(f"已缓存: {torch.cuda.memory_reserved()/1e9:.2f} GB")
+```
 ```
 
 # OOM 处理策略（优先级从高到低）
@@ -912,25 +915,30 @@ def forward(self, Q, K, V, mask=None):
           """
           d_k = Q.size(-1)
 ```
+```
 
 # ① Q @ K^T / √d_k
           scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)
           # scores: (batch, n_heads, seq_len, seq_len)
+```
 ```
 
 # ② mask（可选：Decoder 需要遮住未来位置）
           if mask is not None:
               scores = scores.masked_fill(mask == 0, float('-inf'))
 ```
+```
 
 # ③ softmax
           attention_weights = F.softmax(scores, dim=-1)
           attention_weights = self.dropout(attention_weights)
 ```
+```
 
 # ④ 加权求和
           output = torch.matmul(attention_weights, V)
           return output, attention_weights
+```
 ```
 
 # ========== 验证 ==========
@@ -1025,6 +1033,7 @@ self.d_model = d_model
           self.n_heads = n_heads
           self.d_k = d_model // n_heads
 ```
+```
 
 # 投影矩阵（注意：合并了所有头的投影，效率更高）
           self.W_Q = nn.Linear(d_model, d_model)
@@ -1058,23 +1067,28 @@ def forward(self, Q, K, V, mask=None):
           K = self.W_K(K)
           V = self.W_V(V)
 ```
+```
 
 # 2. 拆分为多头
           Q = self.split_heads(Q)  # (batch, n_heads, seq, d_k)
           K = self.split_heads(K)
           V = self.split_heads(V)
 ```
+```
 
 # 3. 每个头独立做 Attention
           attn_out, attn_weights = self.attention(Q, K, V, mask)
+```
 ```
 
 # 4. 合并多头
           attn_out = self.combine_heads(attn_out)  # (batch, seq, d_model)
 ```
+```
 
 # 5. 输出投影
           return self.W_O(attn_out)
+```
 ```
 
 # ========== 验证 ==========
@@ -1272,6 +1286,7 @@ def forward(self, x, mask=None):
           attn_out = self.self_attn(x, x, x, mask)
           x = self.norm1(x + self.dropout(attn_out))
 ```
+```
 
 # 2. FFN + 残差 + Norm
           ff_out = self.feed_forward(x)
@@ -1306,6 +1321,7 @@ def forward(self, x, mask=None):
 ```
 
 return x
+```
 
 # ⚠️ 架构注释：这是 Post-LN（原论文风格）
 #    写法：y = LayerNorm(x + Sublayer(x))
@@ -1385,10 +1401,12 @@ def forward(self, x, enc_output, src_mask=None, tgt_mask=None):
           attn_out = self.self_attn(x, x, x, tgt_mask)
           x = self.norm1(x + self.dropout(attn_out))
 ```
+```
 
 # 2. Cross-Attention（用 Decoder 的 Q 查 Encoder 的 K,V）
           attn_out = self.cross_attn(x, enc_output, enc_output, src_mask)
           x = self.norm2(x + self.dropout(attn_out))
+```
 ```
 
 # 3. FFN
@@ -1517,6 +1535,7 @@ return generated
 
 
 > 最后一周！前两周你从零手写了 Transformer，现在你用工业级工具（HuggingFace、PEFT）做"外面的事"——但你心里知道每个工具内部在做什么。
+```
 
 ### 星期一
 Decoder 回顾 + GPT-2 Fine-tuning（HF Trainer）
