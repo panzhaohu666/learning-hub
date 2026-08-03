@@ -161,6 +161,15 @@ learning-hub/
 │   ├── 06-阶段三下-深度学习与Transformer.md ← 第12-16周：反向传播→手写Transformer ★
 │   └── 07-阶段四至七-Agent到面试.md     ← 第17-26周：LangChain→Mini-GPT→面试
 │
+├── Linux学习/
+│   └── Linux完全操作指南.md              ← 零基础→实战，15章200+命令
+│
+├── Django学习/
+│   └── Django完全指南.md                 ← Django 6.0 从入门到部署
+│
+├── 数据库学习/
+│   └── 数据库操作指南.md                 ← MySQL/PG/Mongo/Redis/SQLite/SQL Server
+│
 └── 软件设计师/
     ├── 01-备考总纲.md                   ← 考试结构、时间分配、考点速记
     ├── 02-阶段一-每日学习指南.md        ← 8-10月：链表→KMP→排序→UML→PV→子网
