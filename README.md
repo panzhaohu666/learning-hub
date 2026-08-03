@@ -2,12 +2,12 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen)]()
-[![Total Lines](https://img.shields.io/badge/Total%20Lines-22%2C954-blue)]()
+[![Total Lines](https://img.shields.io/badge/Total%20Lines-24%2C204-blue)]()
 [![Guides](https://img.shields.io/badge/Guides-6%20topics-orange)]()
 [![Est. Hours](https://img.shields.io/badge/Est.%20Hours-740%2B-red)]()
 [![Files](https://img.shields.io/badge/Files-14-purple)]()
 
-> 一份 **22,954 行**的全栈自学知识库，涵盖大模型开发、软件设计师备考、Linux运维、Django开发、数据库操作。
+> 一份 **24,204 行**的全栈自学知识库，涵盖大模型开发、软件设计师备考、Linux运维、Django开发、数据库操作。
 > 专为在职自学设计：**手机阅读 + 电脑编码**，全程不依赖视频。  
 > **不是"收藏即学会"的清单——每一行都经过真实的时间预算和可执行性验证。**
 
@@ -153,10 +153,10 @@ learning-hub/
 ├── README.md                           ← 你在这里
 │
 ├── 大模型学习/
-│   ├── 01-总纲-6个月大模型学习计划.md    ← 时间分配、7阶段概览、防崩预案
-│   ├── 02-学习资料清单.md               ← 80+ 篇资料（含链接、优先级、阅读设备）
-│   ├── 03-阶段一-大模型开发入门.md      ← 第1-2周：LLM概念→ChatBot→ReAct
-│   ├── 04-阶段二-大模型应用开发.md      ← 第3-7周：Python→Pandas→Dify
+│   ├── 01-总纲-6个月大模型学习计划.md    ← 17章专业指南·7阶段·480h·Django风格
+│   ├── 02-学习资料清单.md               ← 80+ 篇资料（论文/文档/源码/博客）
+│   ├── 03-阶段一-大模型开发入门.md      ← 第1-2周：LLM概念→ChatBot→ReAct Agent
+│   ├── 04-阶段二-大模型应用开发.md      ← 第3-7周：Python工程化→Pandas→Dify
 │   ├── 05-阶段三上-机器学习与PyTorch.md  ← 第8-11周：ML→PyTorch→手写LayerNorm
 │   ├── 06-阶段三下-深度学习与Transformer.md ← 第12-16周：反向传播→手写Transformer ★
 │   └── 07-阶段四至七-Agent到面试.md     ← 第17-26周：LangChain→Mini-GPT→面试
@@ -171,9 +171,9 @@ learning-hub/
 │   └── 数据库操作指南.md                 ← MySQL/PG/Mongo/Redis/SQLite/SQL Server
 │
 └── 软件设计师/
-    ├── 01-备考总纲.md                   ← 考试结构、时间分配、考点速记
-    ├── 02-阶段一-每日学习指南.md        ← 8-10月：链表→KMP→排序→UML→PV→子网
-    └── 03-阶段二三-每日学习指南.md      ← 11-5月：下午题拆解+三轮真题冲刺
+    ├── 01-备考总纲.md                   ← 考试结构·三阶段路线图·考点速记
+    ├── 02-阶段一-每日学习指南.md        ← 8-10月：数据结构→UML→PV→子网
+    └── 03-阶段二三-每日学习指南.md      ← 11-5月：下午题专项+真题冲刺
 ```
 
 ---
