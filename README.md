@@ -1,13 +1,13 @@
-# 🧠 LLM 学习 + 软考备考 · 完整自学计划
+# 🧠 学习中心 · 完整自学知识库
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen)]()
-[![Total Lines](https://img.shields.io/badge/Total%20Lines-11%2C737-blue)]()
-[![Projects](https://img.shields.io/badge/Projects-12%2B-orange)]()
+[![Total Lines](https://img.shields.io/badge/Total%20Lines-22%2C954-blue)]()
+[![Guides](https://img.shields.io/badge/Guides-6%20topics-orange)]()
 [![Est. Hours](https://img.shields.io/badge/Est.%20Hours-740%2B-red)]()
-[![Stages](https://img.shields.io/badge/Stages-7-purple)]()
+[![Files](https://img.shields.io/badge/Files-14-purple)]()
 
-> 一份 **11,737 行**的零基础→大模型开发工程师 + 软件设计师备考的自学路线图。  
+> 一份 **22,954 行**的全栈自学知识库，涵盖大模型开发、软件设计师备考、Linux运维、Django开发、数据库操作。
 > 专为在职自学设计：**手机阅读 + 电脑编码**，全程不依赖视频。  
 > **不是"收藏即学会"的清单——每一行都经过真实的时间预算和可执行性验证。**
 
