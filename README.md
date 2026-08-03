@@ -149,7 +149,7 @@ RAG系统               DPO对齐/vLLM部署       MoE概念
 ## 📂 仓库结构
 
 ```
-llm-learning-hub/
+learning-hub/
 ├── README.md                           ← 你在这里
 │
 ├── 大模型学习/
@@ -174,8 +174,8 @@ llm-learning-hub/
 ### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/panzhaohu666/llm-learning-hub.git
-cd llm-learning-hub
+git clone https://github.com/panzhaohu666/learning-hub.git
+cd learning-hub
 ```
 
 ### 2. 选择你的路线
