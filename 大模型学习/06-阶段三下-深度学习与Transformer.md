@@ -103,7 +103,6 @@ x → [Linear + ReLU] → h → [Linear] → ŷ
 ```python
   import torch
   import torch.nn.functional as F
-```
 
 # 固定随机种子
 torch.manual_seed(42)
@@ -168,6 +167,7 @@ print(f"b1 梯度差异: {(d_b1 - b1_a.grad).abs().max():.10f}")
 print(f"b2 梯度差异: {(d_b2 - b2_a.grad).abs().max():.10f}")
 # 所有差异应接近 0
 
+```
 > 🎉 **如果所有差异都接近 0**，你刚刚完成了深度学习中最"硬核"的练习——手动推导并实现了反向传播！你现在知道每个 `loss.backward()` 背后到底在算什么了。面试被问到"反向传播是什么"，你可以直接在白板上推导这个 2 层 MLP。
 
 - [ ] 今日完成检查
@@ -258,15 +258,12 @@ LayerNorm：对每个样本，用 128 个 features 的均值和方差归一化
       def __init__(self, p=0.5):
           super().__init__()
           self.p = p
-```
 
 def forward(self, x):
           if self.training:
               mask = (torch.rand_like(x) > self.p).float()
               return x * mask / (1 - self.p)  # 除以 (1-p) 补偿
           return x
-```
-```
 
 # 验证 train/eval 模式的区别
 drop = MyDropout(p=0.5)
@@ -280,6 +277,7 @@ drop.eval()
 eval_out = drop(x)
 print(f"评估模式，均值: {eval_out.mean():.3f}")  # ≈ 1.0
 
+```
 > 🔑 Dropout 除以 (1-p) 的原因：训练时一半神经元被关，总信号减半。除以 (1-p) 保持信号总强度不变，测试时就不需要任何补偿（直接原样输出）。
 
 任务 2：对比 BN vs LN 的实验
@@ -314,30 +312,26 @@ Xavier 初始化 vs Kaiming 初始化 vs 随机小值
         if step < warmup_steps:
             return target_lr * step / warmup_steps
         return target_lr
-```
 
 # 梯度裁剪：防止梯度爆炸
     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-    ```
 
-> 🔥 **Warmup 的直觉**：训练刚开始时，参数是随机的，梯度可能非常大。如果直接用目标学习率，一步就"迈出大气层"。Warmup 让学习率从 0 慢慢涨到目标值——给模型一个"热身"的机会。这个技巧在训练 Transformer 时**几乎是必须的**。
 ```
+> 🔥 **Warmup 的直觉**：训练刚开始时，参数是随机的，梯度可能非常大。如果直接用目标学习率，一步就"迈出大气层"。Warmup 让学习率从 0 慢慢涨到目标值——给模型一个"热身"的机会。这个技巧在训练 Transformer 时**几乎是必须的**。
 
 ### 星期五
 混合精度训练（AMP）
-```
 
 
+```python
     from torch.cuda.amp import autocast, GradScaler
-```
 
 scaler = GradScaler()
-```python
 with autocast():  # 自动用 fp16 计算（更快）
         output = model(x)
         loss = criterion(output, y)
-```
 
+```
 scaler.scale(loss).backward()
 scaler.step(optimizer)
 scaler.update()
@@ -373,18 +367,16 @@ CNN 核心组件：Conv2d（卷积提取特征）→ ReLU（非线性）→ MaxP
 
 带数据增强的 CNN：
 ```python
-  from torchvision import transforms
-```
+from torchvision import transforms
 
 train_transform = transforms.Compose([
-```python
-transforms.RandomHorizontalFlip(p=0.5),   # 随机翻转（数据增强！）
-      transforms.RandomCrop(32, padding=4),     # 随机裁剪
-      transforms.ToTensor(),
-      transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))
-  ])
-  # 数据增强是防止过拟合最有效的手段之一，比调参更有效
-  ```
+    transforms.RandomHorizontalFlip(p=0.5),   # 随机翻转（数据增强！）
+    transforms.RandomCrop(32, padding=4),     # 随机裁剪
+    transforms.ToTensor(),
+    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))
+])
+# 数据增强是防止过拟合最有效的手段之一，比调参更有效
+```
 
 > 💡 **Aha Moment**：数据增强本质上是在"免费制造更多训练数据"。你把每张图水平翻转一下 → 数据量翻倍。模型学到的是"这可能是猫，不管它朝左还是朝右"——鲁棒性自然提升。这也是为什么数据增强比调参更能防止过拟合。
 
@@ -407,9 +399,9 @@ LSTM 改进：引入"门控"机制（遗忘门/输入门/输出门），选择�
 > LSTM 用这三个"门"来管理长距离信息流，解决了 RNN "记不住远距离依赖"的问题。
 
 晚上代码：用真实中文数据集（如 ChnSentiCorp）训练 LSTM 分类器
-```
 
 
+```python
   class LSTMClassifier(nn.Module):
       def __init__(self, vocab_size, embed_dim, hidden_dim, num_classes):
           super().__init__()
@@ -421,7 +413,6 @@ LSTM 改进：引入"门控"机制（遗忘门/输入门/输出门），选择�
               nn.ReLU(), nn.Dropout(0.3),
               nn.Linear(hidden_dim, num_classes)
           )
-```
 
 def forward(self, x, lengths):
           # x: (batch, seq_len)
@@ -433,8 +424,8 @@ def forward(self, x, lengths):
           # 取两个方向最后一层的 hidden state
           last_hidden = torch.cat([h_n[-2], h_n[-1]], dim=-1)  # (batch, hidden*2)
           return self.fc(last_hidden)
-  ```
 
+```
 第13周 · 星期三：GRU 对比 LSTM
 
 手机摸鱼：
@@ -456,17 +447,17 @@ GradScaler：在 backward 前把 loss 放大（scale），backward 后再缩小�
 PyTorch Lightning：把训练循环抽象掉，只保留模型的 forward + configure_optimizers。
 Trainer 自动处理 device/checkpoint/logging/multi-GPU。
 
-```
 
 
+```python
   # AMP 原理验证：观察 fp16 和 fp32 的数值差异
   x_fp32 = torch.tensor(1e-8, dtype=torch.float32)
   x_fp16 = torch.tensor(1e-8, dtype=torch.float16)
   print(f"fp32: {x_fp32.item():.15f}")  # 1e-8（保留）
   print(f"fp16: {x_fp16.item():.15f}")  # 0.0（下溢！）
   # 这就是为什么需要 GradScaler——防止小梯度在 fp16 中变成 0
-  ```
 
+```
 第13周 · 星期五-六：GPU 显存管理 + 综合项目
 
 星期五手机：了解 OOM 原因和处理
@@ -489,15 +480,13 @@ Adam 优化器占用 = 模型参数的 2 倍（m 和 v 两个状态）
 → ④ 训练循环（AMP + gradient clipping）→ ⑤ Wandb 监控
 → ⑥ Checkpoint 保存/加载 → ⑦ 测试集评估 → ⑧ 混淆矩阵可视化
 
-```
 
 
+```python
   # 显存诊断工具
   print(torch.cuda.memory_summary())  # 详细显存报告
   print(f"已分配: {torch.cuda.memory_allocated()/1e9:.2f} GB")
   print(f"已缓存: {torch.cuda.memory_reserved()/1e9:.2f} GB")
-```
-```
 
 # OOM 处理策略（优先级从高到低）
 # 1. 减小 batch_size（最直接）
@@ -506,6 +495,7 @@ Adam 优化器占用 = 模型参数的 2 倍（m 和 v 两个状态）
 # 4. 用 fp16/bf16（省一半显存）
 # 5. 用 gradient checkpointing（牺牲 20% 速度节省激活显存）
 
+```
 > 🎉 **第 13 周完成！** CNN 做图像、LSTM/GRU 做文本、AMP 加速、OOM 处理——你已经能独立完成一个深度学习项目了。更重要的是，你看到了"训练循环是通用的"：不管模型是 CNN、RNN 还是 Transformer，那 5 行核心代码不变。
 
 - [ ] 第13周完成检查
@@ -529,10 +519,8 @@ TF-IDF = 词频 × log(总文档数/包含该词的文档数)，用于找"重要
 ```python
   import jieba, re
   from collections import Counter
-```
 
 def preprocess_chinese(text):
-```python
 # 1. 去除非中文字符
       text = re.sub(r'[^\u4e00-\u9fff]', ' ', text)
       # 2. 分词
@@ -542,13 +530,13 @@ def preprocess_chinese(text):
                        '不', '人', '都', '一', '一个', '上', '也', '很', '到'])
       words = [w for w in words if w not in stopwords and len(w) > 1]
       return words
-```
 
 # 测试
 text = "自然语言处理是人工智能的一个重要方向，近年来发展迅速"
 print(preprocess_chinese(text))
 # ['自然语言', '处理', '人工智能', '一个', '重要', '方向', '近年', '发展', '迅速']
 
+```
 ### 星期二
 Word2Vec / GloVe 词向量
 手机摸鱼：
@@ -565,7 +553,6 @@ king - man + woman ≈ queen（向量运算表达了语义关系！）
 
 ```python
   import gensim.downloader as api
-```
 
 # 加载预训练词向量
 wv = api.load('glove-wiki-gigaword-100')  # 100 维，约 400MB
@@ -582,6 +569,7 @@ print(wv.most_similar(positive=['king', 'woman'], negative=['man'], topn=3))
 # 不匹配词
 print(wv.doesnt_match(['apple', 'banana', 'car', 'orange']))  # car
 
+```
 ### 星期三
 Tokenizer 原理（BPE 深度）
 手机摸鱼：
@@ -599,7 +587,6 @@ BPE 步骤：
 ```python
   # 用 HuggingFace tokenizer 实验
   from transformers import AutoTokenizer
-```
 
 tokenizer = AutoTokenizer.from_pretrained("bert-base-chinese")
 text = "我喜欢学习人工智能"
@@ -610,6 +597,7 @@ print(ids)
 restored = tokenizer.decode(ids)
 print(restored)  # 我 喜 欢 学 习 人 工 智 能（空格分隔）
 
+```
 > ⚠️ **为什么中文 BERT 把每个字都拆开了？** 因为 BERT 中文版用的是字级别的 BPE（Character-level）。这不是 bug，是设计选择——中文"词"的边界模糊，"人工智能"是"人工"+"智能"还是"人"+"工"+"智能"？字级别避免了分词歧义。
 
 ### 星期四
@@ -623,7 +611,6 @@ BERT Fine-tune 文本分类（完整版）
   from datasets import Dataset
   import numpy as np
   from sklearn.metrics import accuracy_score, f1_score
-```
 
 def compute_metrics(eval_pred):
 logits, labels = eval_pred
@@ -649,7 +636,6 @@ output_dir="./bert-finetuned",
 num_train_epochs=5,
 per_device_train_batch_size=16,
 per_device_eval_batch_size=64,
-```python
 evaluation_strategy="epoch",    # 每个 epoch 评估一次
       save_strategy="epoch",          # 每个 epoch 保存
       load_best_model_at_end=True,    # 训练完加载最佳模型
@@ -658,7 +644,6 @@ evaluation_strategy="epoch",    # 每个 epoch 评估一次
       logging_steps=50,
       fp16=torch.cuda.is_available(), # 有 GPU 就用混合精度
   )
-```
 
 trainer = Trainer(
 model=model,
@@ -671,6 +656,7 @@ callbacks=[EarlyStoppingCallback(early_stopping_patience=2)]
 
 trainer.train()
 print(trainer.evaluate())
+```
 trainer.save_model("./bert-finetuned-best")
 
 > 🎉 **你用不到 50 行代码完成了一个 BERT fine-tune 项目！** 这就是 HuggingFace 的力量——它把模型架构、tokenizer、训练循环全部封装好了，你只需要提供数据。但下周你要打开这个"黑盒子"，亲手实现 BERT 内部的核心——Transformer。
@@ -682,7 +668,6 @@ GPT-2 文本生成
 
 ```python
   from transformers import GPT2LMHeadModel, GPT2Tokenizer
-```
 
 model = GPT2LMHeadModel.from_pretrained("uer/gpt2-chinese-cluecorpussmall")
 tokenizer = GPT2Tokenizer.from_pretrained("uer/gpt2-chinese-cluecorpussmall")
@@ -692,7 +677,6 @@ inputs = tokenizer(prompt, return_tensors="pt")
 outputs = model.generate(
 **inputs,
 max_length=max_length,
-```python
 temperature=temperature,   # 控制随机性：低=保守，高=疯狂
           top_p=top_p,               # nucleus sampling
           do_sample=True,
@@ -700,10 +684,10 @@ temperature=temperature,   # 控制随机性：低=保守，高=疯狂
           no_repeat_ngram_size=2,    # 避免重复
       )
       return tokenizer.decode(outputs[0], skip_special_tokens=True)
-```
 
 print(generate("人工智能的未来是"))
 
+```
 > 🎲 **temperature 和 top_p**：temperature=0 → 每次选概率最高的词（确定性，可能无聊）。temperature=1 → 按原始概率分布采样（自然）。temperature=2 → 概率分布被"拉平"，更随机（可能胡说八道）。top_p (nucleus sampling) 是当前最流行的采样策略——只从累积概率达到 p 的词中选，自动过滤"明显不对"的词。
 
 ### 星期六 · 3.5h
@@ -897,16 +881,13 @@ output: (2, 4, 4) @ (2, 4, 4) = (2, 4, 4)  ← 和 Q 形状一样！
   import torch.nn as nn
   import torch.nn.functional as F
   import math
-```
 
 class ScaledDotProductAttention(nn.Module):
 """手写注意力：Attention(Q,K,V) = softmax(QK^T/√d_k)V"""
 
-```python
 def __init__(self, dropout=0.1):
           super().__init__()
           self.dropout = nn.Dropout(dropout)
-```
 
 def forward(self, Q, K, V, mask=None):
           """
@@ -914,32 +895,22 @@ def forward(self, Q, K, V, mask=None):
           mask: (batch, 1, seq_len, seq_len) or None
           """
           d_k = Q.size(-1)
-```
-```
 
 # ① Q @ K^T / √d_k
           scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)
           # scores: (batch, n_heads, seq_len, seq_len)
-```
-```
 
 # ② mask（可选：Decoder 需要遮住未来位置）
           if mask is not None:
               scores = scores.masked_fill(mask == 0, float('-inf'))
-```
-```
 
 # ③ softmax
           attention_weights = F.softmax(scores, dim=-1)
           attention_weights = self.dropout(attention_weights)
-```
-```
 
 # ④ 加权求和
           output = torch.matmul(attention_weights, V)
           return output, attention_weights
-```
-```
 
 # ========== 验证 ==========
 batch, seq_len, d_model, n_heads = 2, 4, 8, 2
@@ -956,6 +927,7 @@ print(f"输出形状: {output.shape}")     # (2, 2, 4, 4)
 print(f"注意力权重形状: {weights.shape}")  # (2, 2, 4, 4)
 print(f"每行权重和（应接近1）:\n{weights[0,0].sum(dim=-1)}")
 
+```
 > 🎉 **第一个模块完成！** Attention 是 Transformer 的心脏。你现在理解了 Q/K/V 的含义、为什么除以 √d_k、注意力权重怎么算。剩下的模块都是在这个基础上搭建的。
 
 - [ ] 今日完成检查
@@ -1027,31 +999,25 @@ MultiHead(Q,K,V) = Concat(head₁, ..., headₕ) W_O
       def __init__(self, d_model, n_heads, dropout=0.1):
           super().__init__()
           assert d_model % n_heads == 0, "d_model 必须能被 n_heads 整除"
-```
 
 self.d_model = d_model
           self.n_heads = n_heads
           self.d_k = d_model // n_heads
-```
-```
 
 # 投影矩阵（注意：合并了所有头的投影，效率更高）
           self.W_Q = nn.Linear(d_model, d_model)
           self.W_K = nn.Linear(d_model, d_model)
           self.W_V = nn.Linear(d_model, d_model)
           self.W_O = nn.Linear(d_model, d_model)  # 输出投影
-```
 
 self.attention = ScaledDotProductAttention(dropout)
 
-```python
 def split_heads(self, x):
           """x: (batch, seq_len, d_model)
              → (batch, n_heads, seq_len, d_k)"""
           batch, seq_len, _ = x.shape
           x = x.view(batch, seq_len, self.n_heads, self.d_k)
           return x.transpose(1, 2)  # (batch, n_heads, seq_len, d_k)
-```
 
 def combine_heads(self, x):
           """x: (batch, n_heads, seq_len, d_k)
@@ -1059,37 +1025,26 @@ def combine_heads(self, x):
           batch, _, seq_len, _ = x.shape
           x = x.transpose(1, 2)  # (batch, seq_len, n_heads, d_k)
           return x.reshape(batch, seq_len, self.d_model)
-```
 
 def forward(self, Q, K, V, mask=None):
           # 1. 线性投影
           Q = self.W_Q(Q)  # (batch, seq, d_model)
           K = self.W_K(K)
           V = self.W_V(V)
-```
-```
 
 # 2. 拆分为多头
           Q = self.split_heads(Q)  # (batch, n_heads, seq, d_k)
           K = self.split_heads(K)
           V = self.split_heads(V)
-```
-```
 
 # 3. 每个头独立做 Attention
           attn_out, attn_weights = self.attention(Q, K, V, mask)
-```
-```
 
 # 4. 合并多头
           attn_out = self.combine_heads(attn_out)  # (batch, seq, d_model)
-```
-```
 
 # 5. 输出投影
           return self.W_O(attn_out)
-```
-```
 
 # ========== 验证 ==========
 batch, seq_len, d_model, n_heads = 2, 4, 8, 2
@@ -1099,6 +1054,7 @@ mha = MultiHeadAttention(d_model, n_heads)
 output = mha(x, x, x)  # Self-Attention: Q=K=V=x
 print(f"Multi-Head Attention 输出: {output.shape}")  # (2, 4, 8) ← 和输入形状一样！
 
+```
 > 🎉 **Multi-Head Attention 完成！** 注意到输出形状和输入完全一样吗？这正是 Transformer 能"层层堆叠"的关键——每层的输入输出维度一致，可以像积木一样往上摞。
 
 - [ ] 今日完成检查
@@ -1171,20 +1127,19 @@ FFN(x) = (SiLU(x @ W_gate) ⊙ (x @ W_up)) @ W_down
           pe[:, 0::2] = torch.sin(position * div_term)  # 偶数维度用 sin
           pe[:, 1::2] = torch.cos(position * div_term)  # 奇数维度用 cos
           self.register_buffer('pe', pe.unsqueeze(0))   # (1, max_len, d_model)
-```
 
 def forward(self, x):
           # x: (batch, seq_len, d_model)
           return x + self.pe[:, :x.size(1), :]
-  ```
 
+```
 > 🔑 **register_buffer 的作用**：PE 不是可训练参数，但需要在 `model.to(device)` 时一起移动。`register_buffer` 让 PE 像参数一样自动跟随模型移动，但不会被优化器更新。
 
 任务 2：手写 Feed-Forward Network
 
-```
 
 
+```python
   class FeedForward(nn.Module):
       def __init__(self, d_model, d_ff, dropout=0.1):
           super().__init__()
@@ -1192,12 +1147,11 @@ def forward(self, x):
           self.fc2 = nn.Linear(d_ff, d_model)    # 压缩：2048 → 512
           self.dropout = nn.Dropout(dropout)
           self.activation = nn.GELU()  # 或 ReLU()
-```
 
 def forward(self, x):
           return self.fc2(self.dropout(self.activation(self.fc1(x))))
-  ```
 
+```
 > 📐 **FFN 的形状变化**：
 > 输入 (batch, seq=10, d_model=512) → fc1 → (batch, 10, d_ff=2048) → GELU → dropout → fc2 → (batch, 10, 512)
 > 先膨胀到 4 倍（提供大量"思考空间"），再压缩回来。这是 Transformer 中最重的部分——FFN 的参数约占整个 Transformer 的 2/3。
@@ -1240,15 +1194,15 @@ def forward(self, x):
 > ```
 
 伪代码：
-```
 
 
+```python
 def encoder_layer(x):
          x = LayerNorm(x + MultiHeadAttention(x, x, x))
          x = LayerNorm(x + FeedForward(x))
          return x
-```
 
+```
 **2. 残差连接（Residual Connection）的作用**
 
 把输入"跳过"一层直接加到输出上：
@@ -1279,24 +1233,19 @@ x → EncoderLayer₁ → EncoderLayer₂ → ... → EncoderLayerₙ → output
           self.norm1 = nn.LayerNorm(d_model)
           self.norm2 = nn.LayerNorm(d_model)
           self.dropout = nn.Dropout(dropout)
-```
 
 def forward(self, x, mask=None):
           # 1. Self-Attention + 残差 + Norm
           attn_out = self.self_attn(x, x, x, mask)
           x = self.norm1(x + self.dropout(attn_out))
-```
-```
 
 # 2. FFN + 残差 + Norm
           ff_out = self.feed_forward(x)
           x = self.norm2(x + self.dropout(ff_out))
-```
 
 return x
 
 class TransformerEncoder(nn.Module):
-```python
 def __init__(self, vocab_size, d_model, n_heads, d_ff, n_layers, dropout=0.1):
           super().__init__()
           self.embedding = nn.Embedding(vocab_size, d_model)
@@ -1306,22 +1255,18 @@ def __init__(self, vocab_size, d_model, n_heads, d_ff, n_layers, dropout=0.1):
               for _ in range(n_layers)
           ])
           self.dropout = nn.Dropout(dropout)
-```
 
 def forward(self, x, mask=None):
           # Token Embedding + Positional Encoding
           x = self.embedding(x) * math.sqrt(self.embedding.embedding_dim)
           x = self.pos_encoding(x)
           x = self.dropout(x)
-```
 
 # 逐层通过 Encoder
           for layer in self.layers:
               x = layer(x, mask)
-```
 
 return x
-```
 
 # ⚠️ 架构注释：这是 Post-LN（原论文风格）
 #    写法：y = LayerNorm(x + Sublayer(x))
@@ -1340,6 +1285,7 @@ output = encoder(dummy_input)
 print(f"Encoder 输出形状: {output.shape}")  # (2, 10, 512)
 print(f"参数量: {sum(p.numel() for p in encoder.parameters()):,}")
 
+```
 > 🎉 **完整的 Transformer Encoder 已经跑通了！** 你刚刚实现了 BERT 的核心架构——BERT 就是一堆 Encoder Layer 堆起来的。区别只是 BERT 用 12 层、d_model=768、在超大语料上预训练过。但架构和你写的**一模一样**。
 
 - [ ] 今日完成检查
@@ -1394,28 +1340,23 @@ softmax(-inf) = 0 → 这些位置的注意力权重为 0。
           self.norm2 = nn.LayerNorm(d_model)
           self.norm3 = nn.LayerNorm(d_model)
           self.dropout = nn.Dropout(dropout)
-```
 
 def forward(self, x, enc_output, src_mask=None, tgt_mask=None):
           # 1. Masked Self-Attention（只能看当前及之前位置）
           attn_out = self.self_attn(x, x, x, tgt_mask)
           x = self.norm1(x + self.dropout(attn_out))
-```
-```
 
 # 2. Cross-Attention（用 Decoder 的 Q 查 Encoder 的 K,V）
           attn_out = self.cross_attn(x, enc_output, enc_output, src_mask)
           x = self.norm2(x + self.dropout(attn_out))
-```
-```
 
 # 3. FFN
           ff_out = self.feed_forward(x)
           x = self.norm3(x + self.dropout(ff_out))
-```
 
 return x
 
+```
 > 📐 **Decoder Layer 的三层结构**：
 > ① Self-Attention（自己和自己交流，但只能看过去）
 > ② Cross-Attention（和 Encoder 交流，Q 来自自己，K/V 来自 Encoder）
@@ -1444,25 +1385,20 @@ return x
           ])
           self.fc_out = nn.Linear(d_model, tgt_vocab_size)
           self.dropout = nn.Dropout(dropout)
-```
 
 def forward(self, src, tgt, src_mask=None, tgt_mask=None):
           # Encoder
           enc_output = self.encoder(src, src_mask)
-```
 
 # Decoder
           x = self.decoder_embedding(tgt) * math.sqrt(d_model)
           x = self.decoder_pos(x)
           x = self.dropout(x)
-```
 
 for layer in self.decoder_layers:
 x = layer(x, enc_output, src_mask, tgt_mask)
 
-```python
 return self.fc_out(x)  # (batch, tgt_len, tgt_vocab_size)
-```
 
 def generate(self, src, max_len, start_token, end_token):
           """推理模式：自回归生成"""
@@ -1470,7 +1406,6 @@ def generate(self, src, max_len, start_token, end_token):
           # Encode 源序列（只做一次）
           with torch.no_grad():
               enc_output = self.encoder(src)
-```
 
 # 逐 token 生成
           generated = [start_token]
@@ -1485,10 +1420,10 @@ def generate(self, src, max_len, start_token, end_token):
               generated.append(next_token)
               if next_token == end_token:
                   break
-```
 
 return generated
 
+```
 验证清单（逐一确认）：
 - [ ] Encoder 输入 (2, 10)，输出 (2, 10, 512) ✓
 - [ ] Decoder 输入 (2, 8) + Encoder 输出，输出 (2, 8, tgt_vocab_size) ✓
@@ -1535,7 +1470,6 @@ return generated
 
 
 > 最后一周！前两周你从零手写了 Transformer，现在你用工业级工具（HuggingFace、PEFT）做"外面的事"——但你心里知道每个工具内部在做什么。
-```
 
 ### 星期一
 Decoder 回顾 + GPT-2 Fine-tuning（HF Trainer）
@@ -1569,19 +1503,15 @@ W_new = W_original + B × A（其中 A 和 B 的秩远小于 W）
 > **凌晨 3 点把你叫醒，你能做到吗？**
 > 
 1. 手写一遍 Transformer forward（白板默写！不查代码！）
-   ```
    x = embedding(tokens) + positional_encoding
    for layer in layers:
        x = LayerNorm(x + MultiHeadAttention(x, x, x))  # Encoder
        x = LayerNorm(x + FFN(x))
    # Decoder 类似，多一层 Cross-Attention
-   ```
 2. 标注每个 tensor 的维度
-   ```
    Q: (batch, seq, d_model) → split → (batch, n_heads, seq, d_k)
    scores: (batch, n_heads, seq, seq) → softmax → weights
    output: (batch, n_heads, seq, d_k) → combine → (batch, seq, d_model)
-   ```
 3. 整理本周所有代码到 GitHub
 4. 更新 Obsidian
 
