@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>待办事项</title>
+    <link rel="stylesheet" href="{% static 'tasks/style.css' %}">
+</head>
+<body>
+    <div class="container">
+
+        <!-- 顶部标题 -->
+        <div class="header">
+            <h1>我的待办事项</h1>
+            <p class="subtitle">保持专注，逐一完成</p>
+        </div>
+
+        <!-- 用户信息栏 -->
+        <div class="user-bar">
+            <span class="user-name">👤 {{ request.user.username }}</span>
+            <a href="{% url 'logout' %}" class="logout-btn">登出</a>
+        </div>
+
+        <!-- 添加任务卡片 -->
+        <div class="add-card">
+            <form method="POST" action="{% url 'task_create' %}">
+                {% csrf_token %}
+                <input
+                    type="text"
+                    name="title"
+                    placeholder="输入新任务，按回车添加..."
+                    required
+                    autofocus
+                >
+                <textarea
+                    name="description"
+                    placeholder="任务描述（可选）"
+                ></textarea>
+                <button type="submit">添加任务</button>
+            </form>
+        </div>
+
+        <!-- 任务列表 -->
+        {% if tasks %}
+            <ul class="task-list">
+                {% for task in tasks %}
+                    <li class="task-item {% if task.completed %}completed{% endif %}">
+                        <!-- 完成圆圈按钮 -->
+                        <a
+                            href="{% url 'task_toggle' task.pk %}"
+                            class="toggle-btn {% if task.completed %}done{% endif %}"
+                            title="{% if task.completed %}标记为未完成{% else %}标记为已完成{% endif %}"
+                        >
+                            {% if task.completed %}✓{% endif %}
+                        </a>
+
+                        <!-- 任务文字 -->
+                        <div class="task-content">
+                            <div class="task-title">{{ task.title }}</div>
+                            {% if task.description %}
+                                <div class="task-desc">{{ task.description }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 删除按钮 -->
+                        <a
+                            href="{% url 'task_delete' task.pk %}"
+                            class="delete-btn"
+                            onclick="return confirm('确定要删除「{{ task.title }}」吗？')"
+                            title="删除任务"
+                        >删除</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="empty-state">
+                <div class="icon">📋</div>
+                <p>还没有任务，在上方添加一个吧！</p>
+            </div>
+        {% endif %}
+
+        <!-- 底部统计 -->
+        <div class="stats">
+            <span>共 {{ total_count }} 项</span>
+            <span class="done-count">✓ 已完成 {{ completed_count }} 项</span>
+            {% if completed_count %}
+                <a href="{% url 'task_clear_completed' %}"
+                   class="clear-btn"
+                   onclick="return confirm('确定要清除所有已完成任务吗？')">
+                    🧹 清除已完成
+                </a>
+            {% endif %}
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 待办事项</title>
+    <link rel="stylesheet" href="{% static 'tasks/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>登录</h1>
+            <p class="subtitle">欢迎回来</p>
+        </div>
+
+        <div class="add-card">
+            <form method="POST">
+                {% csrf_token %}
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="error-msg">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <input type="text" name="username" placeholder="用户名" required autofocus>
+                <input type="password" name="password" placeholder="密码" required>
+                <button type="submit">登录</button>
+            </form>
+        </div>
+
+        <p class="auth-link">
+            还没有账号？<a href="{% url 'register' %}">立即注册</a>
+        </p>
+    </div>
+</body>
+</html>
