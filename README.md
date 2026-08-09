@@ -2,12 +2,12 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen)]()
-[![Total Lines](https://img.shields.io/badge/Total%20Lines-24%2C204-blue)]()
-[![Guides](https://img.shields.io/badge/Guides-6%20topics-orange)]()
+[![Total Lines](https://img.shields.io/badge/Total%20Lines-36%2C040-blue)]()
+[![Guides](https://img.shields.io/badge/Guides-8%20topics-orange)]()
 [![Est. Hours](https://img.shields.io/badge/Est.%20Hours-740%2B-red)]()
-[![Files](https://img.shields.io/badge/Files-14-purple)]()
+[![Files](https://img.shields.io/badge/Files-18-purple)]()
 
-> 一份 **24,204 行**的全栈自学知识库，涵盖大模型开发、软件设计师备考、Linux运维、Django开发、数据库操作。
+> 一份 **36,040 行**的全栈自学知识库，涵盖大模型开发、软件设计师备考、Linux运维、Django开发、数据库操作。
 > 专为在职自学设计：**手机阅读 + 电脑编码**，全程不依赖视频。  
 > **不是"收藏即学会"的清单——每一行都经过真实的时间预算和可执行性验证。**
 
@@ -136,13 +136,15 @@ RAG系统               DPO对齐/vLLM部署       MoE概念
 | 模块 | 分值 | 优先级 |
 |------|------|--------|
 | 数据结构与算法 | 10-12 | ★★★ |
-| 软件工程 | 10-12 | ★★★ |
+| **软件工程** | **10-12** | **★★★** |
 | 面向对象技术 | 8-10 | ★★★ |
 | 程序设计语言 | 6-8 | ★★ |
 | 操作系统 | 5-7 | ★★ |
 | 计算机组成 | 5-7 | ★★ |
 | 数据库 | 5-7 | ★★ |
 | 计算机网络 | 5-7 | ★★ |
+
+> 🆕 **软件工程模块新增**：[06-软件开发全流程SOP.md](./软件设计师/06-软件开发全流程SOP.md) — 从立项到退役的 12 阶段标准操作手册，含 Mermaid 流程图、质量门禁、DORA 指标、事故复盘模板，面试和实务双适用。
 
 ---
 
@@ -173,7 +175,10 @@ learning-hub/
 └── 软件设计师/
     ├── 01-备考总纲.md                   ← 考试结构·三阶段路线图·考点速记
     ├── 02-阶段一-每日学习指南.md        ← 8-10月：数据结构→UML→PV→子网
-    └── 03-阶段二三-每日学习指南.md      ← 11-5月：下午题专项+真题冲刺
+    ├── 03-阶段二三-每日学习指南.md      ← 11-5月：下午题专项+真题冲刺
+    ├── 04-教材重点笔记_详细版.md        ← 教材12章完整笔记·表格速查
+    ├── 05-教材重点笔记_速查版.md        ← 精简版·考前快速复习
+    └── 06-软件开发全流程SOP.md          ← 🆕 12阶段：立项→需求→架构→开发→测试→部署→运维→退役
 ```
 
 ---
@@ -298,8 +303,8 @@ cd learning-hub
 
 | 指标 | 数值 |
 |------|------|
-| 文件总数 | 10 个核心文件 |
-| 总行数 | 11,737 行 |
+| 文件总数 | 18 个核心文件 |
+| 总行数 | 36,040 行 |
 | 大模型学习材料 | 80+ 篇（含论文、源码、文档链接） |
 | 软考真题覆盖 | 近 8 年 16 套 |
 | 计划项目数 | 12+ 个 GitHub 项目 |
