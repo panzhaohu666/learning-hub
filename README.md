@@ -7,7 +7,7 @@
 [![Est. Hours](https://img.shields.io/badge/Est.%20Hours-740%2B-red)]()
 [![Files](https://img.shields.io/badge/Files-18-purple)]()
 
-> 一份 **36,040 行**的全栈自学知识库，涵盖大模型开发、软件设计师备考、Linux运维、Django开发、数据库操作。
+> 一份 **36,040 行**的全栈自学知识库，涵盖大模型开发、软件设计师备考、Linux运维、Django开发、Python全栈工程、数据库操作。
 > 专为在职自学设计：**手机阅读 + 电脑编码**，全程不依赖视频。  
 > **不是"收藏即学会"的清单——每一行都经过真实的时间预算和可执行性验证。**
 
@@ -167,7 +167,8 @@ learning-hub/
 │   └── Linux完全操作指南.md              ← 零基础→实战，15章200+命令
 │
 ├── Django学习/
-│   └── Django完全指南.md                 ← Django 6.0 从入门到部署
+│   ├── Django完全指南.md                 ← Django 6.0 从入门到部署
+│   └── Python全栈工程师-完整学习计划.md    ← 后端API→全栈Web→DevOps→微服务 9阶段
 │
 ├── 数据库学习/
 │   └── 数据库操作指南.md                 ← MySQL/PG/Mongo/Redis/SQLite/SQL Server
