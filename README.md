@@ -3,11 +3,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen)]()
 [![Total Lines](https://img.shields.io/badge/Total%20Lines-36%2C040-blue)]()
-[![Guides](https://img.shields.io/badge/Guides-8%20topics-orange)]()
+[![Guides](https://img.shields.io/badge/Guides-9%20topics-orange)]()
 [![Est. Hours](https://img.shields.io/badge/Est.%20Hours-740%2B-red)]()
-[![Files](https://img.shields.io/badge/Files-18-purple)]()
+[![Files](https://img.shields.io/badge/Files-19-purple)]()
 
-> 一份 **36,040 行**的全栈自学知识库，涵盖大模型开发、软件设计师备考、Linux运维、Django开发、Python全栈工程、数据库操作。
+> 一份 **37,000+ 行**的全栈自学知识库，涵盖大模型开发、软件设计师备考、Linux运维、Django开发、Python全栈工程、数据库操作、API 开发。
 > 专为在职自学设计：**手机阅读 + 电脑编码**，全程不依赖视频。  
 > **不是"收藏即学会"的清单——每一行都经过真实的时间预算和可执行性验证。**
 
@@ -173,6 +173,9 @@ learning-hub/
 ├── 数据库学习/
 │   └── 数据库操作指南.md                 ← MySQL/PG/Mongo/Redis/SQLite/SQL Server
 │
+├── API学习/
+│   └── API完全指南.md                    ← 零基础：概念→HTTP→REST→认证→文档→实战→设计
+
 └── 软件设计师/
     ├── 01-备考总纲.md                   ← 考试结构·三阶段路线图·考点速记
     ├── 02-阶段一-每日学习指南.md        ← 8-10月：数据结构→UML→PV→子网
