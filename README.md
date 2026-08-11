@@ -2,12 +2,12 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen)]()
-[![Total Lines](https://img.shields.io/badge/Total%20Lines-36%2C040-blue)]()
-[![Guides](https://img.shields.io/badge/Guides-9%20topics-orange)]()
+[![Total Lines](https://img.shields.io/badge/Total%20Lines-37%2C700-blue)]()
+[![Guides](https://img.shields.io/badge/Guides-10%20topics-orange)]()
 [![Est. Hours](https://img.shields.io/badge/Est.%20Hours-740%2B-red)]()
-[![Files](https://img.shields.io/badge/Files-19-purple)]()
+[![Files](https://img.shields.io/badge/Files-20-purple)]()
 
-> 一份 **37,000+ 行**的全栈自学知识库，涵盖大模型开发、软件设计师备考、Linux运维、Django开发、Python全栈工程、数据库操作、API 开发。
+> 一份 **37,700+ 行**的全栈自学知识库，涵盖大模型开发、软件设计师备考、Linux运维、Django开发、Python全栈工程、数据库操作、API 开发、网络协议。
 > 专为在职自学设计：**手机阅读 + 电脑编码**，全程不依赖视频。  
 > **不是"收藏即学会"的清单——每一行都经过真实的时间预算和可执行性验证。**
 
@@ -144,6 +144,8 @@ RAG系统               DPO对齐/vLLM部署       MoE概念
 | 数据库 | 5-7 | ★★ |
 | 计算机网络 | 5-7 | ★★ |
 
+> 🆕 **网络协议专项**：[网络协议学习手册](./网络协议学习/网络协议学习手册.md) — TCP/IP 四层模型全覆盖，含报文格式图、工作流程图、面试题汇总、Linux 调优参数、端口速查表，软考计算机网络部分可配合使用。
+
 > 🆕 **软件工程模块新增**：[06-软件开发全流程SOP.md](./软件设计师/06-软件开发全流程SOP.md) — 从立项到退役的 12 阶段标准操作手册，含 Mermaid 流程图、质量门禁、DORA 指标、事故复盘模板，面试和实务双适用。
 
 ---
@@ -175,6 +177,9 @@ learning-hub/
 │
 ├── API学习/
 │   └── API完全指南.md                    ← 零基础：概念→HTTP→REST→认证→文档→实战→设计
+│
+├── 网络协议学习/
+│   └── 网络协议学习手册.md               ← TCP/IP四层模型：Ethernet/ARP/IP/TCP/UDP/DNS/HTTP/TLS/WebSocket/QUIC/BGP等
 
 └── 软件设计师/
     ├── 01-备考总纲.md                   ← 考试结构·三阶段路线图·考点速记
@@ -307,8 +312,8 @@ cd learning-hub
 
 | 指标 | 数值 |
 |------|------|
-| 文件总数 | 18 个核心文件 |
-| 总行数 | 36,040 行 |
+| 文件总数 | 20 个核心文件 |
+| 总行数 | 37,700 行 |
 | 大模型学习材料 | 80+ 篇（含论文、源码、文档链接） |
 | 软考真题覆盖 | 近 8 年 16 套 |
 | 计划项目数 | 12+ 个 GitHub 项目 |
