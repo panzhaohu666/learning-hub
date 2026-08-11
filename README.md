@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen)]()
-[![Total Lines](https://img.shields.io/badge/Total%20Lines-37%2C700-blue)]()
+[![Total Lines](https://img.shields.io/badge/Total%20Lines-38%2C800-blue)]()
 [![Guides](https://img.shields.io/badge/Guides-10%20topics-orange)]()
 [![Est. Hours](https://img.shields.io/badge/Est.%20Hours-740%2B-red)]()
 [![Files](https://img.shields.io/badge/Files-20-purple)]()
@@ -179,7 +179,7 @@ learning-hub/
 │   └── API完全指南.md                    ← 零基础：概念→HTTP→REST→认证→文档→实战→设计
 │
 ├── 网络协议学习/
-│   └── 网络协议学习手册.md               ← TCP/IP四层模型：Ethernet/ARP/IP/CIDR/TCP/UDP/DNS/HTTP/TLS/CDN/负载均衡/WebSocket/QUIC/BGP等
+│   └── 网络协议学习手册.md               ← TCP/IP四层模型：Ethernet/ARP/IP/CIDR/TCP/UDP/DNS/HTTP/TLS/CDN/负载均衡/代理/VPN/Docker网络等
 
 └── 软件设计师/
     ├── 01-备考总纲.md                   ← 考试结构·三阶段路线图·考点速记
