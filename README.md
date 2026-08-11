@@ -179,7 +179,7 @@ learning-hub/
 │   └── API完全指南.md                    ← 零基础：概念→HTTP→REST→认证→文档→实战→设计
 │
 ├── 网络协议学习/
-│   └── 网络协议学习手册.md               ← TCP/IP四层模型：Ethernet/ARP/IP/TCP/UDP/DNS/HTTP/TLS/WebSocket/QUIC/BGP等
+│   └── 网络协议学习手册.md               ← TCP/IP四层模型：Ethernet/ARP/IP/CIDR/TCP/UDP/DNS/HTTP/TLS/CDN/负载均衡/WebSocket/QUIC/BGP等
 
 └── 软件设计师/
     ├── 01-备考总纲.md                   ← 考试结构·三阶段路线图·考点速记
