@@ -1,4 +1,4 @@
-# 🧠 学习中心 · 完整自学知识库
+# 🧠 开源自学平台 · 大模型 + 软考 · 系统化路线图 + 实践笔记
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen)]()
@@ -7,9 +7,9 @@
 [![Est. Hours](https://img.shields.io/badge/Est.%20Hours-740%2B-red)]()
 [![Files](https://img.shields.io/badge/Files-20-purple)]()
 
-> 一份 **37,700+ 行**的全栈自学知识库，涵盖大模型开发、软件设计师备考、Linux运维、Django开发、Python全栈工程、数据库操作、API 开发、网络协议。
-> 专为在职自学设计：**手机阅读 + 电脑编码**，全程不依赖视频。  
-> **不是"收藏即学会"的清单——每一行都经过真实的时间预算和可执行性验证。**
+> 🏗️ 一个持续更新的**开源自学平台**，覆盖大模型开发、软件设计师备考、Linux运维、Django开发、Python全栈、数据库、API、网络协议。
+> 📱💻 手机阅读 + 电脑编码，全程不依赖视频。  
+> ⚡ 每一行都经过真实的时间预算和可执行性验证——不是收藏清单，是可落地的路线图。
 
 ---
 
@@ -58,7 +58,7 @@ def chat():
 
 ## 📖 这是什么？
 
-这是一个**双线并行的自学计划**，包含两部分：
+一个**开源自学平台**，围绕两大主线持续建设：
 
 | 计划 | 时长 | 目标 | 每周投入 | 总时长 |
 |------|------|------|----------|--------|
@@ -419,3 +419,9 @@ MIT © [panzhaohu666](https://github.com/panzhaohu666)
 
 > 坚持不下去的时候，翻到总纲第十八章「防崩预案」。  
 > **允许降级，不允许归零。**
+
+---
+
+<p align="center">
+  <sub>🏗️ 开源自学平台 · 持续更新中 | <a href="https://github.com/panzhaohu666/learning-hub">github.com/panzhaohu666/learning-hub</a></sub>
+</p>
