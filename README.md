@@ -2,10 +2,10 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen)]()
-[![Total Lines](https://img.shields.io/badge/Total%20Lines-38%2C800-blue)]()
+[![Total Lines](https://img.shields.io/badge/Total%20Lines-48%2C500-blue)]()
 [![Guides](https://img.shields.io/badge/Guides-10%20topics-orange)]()
 [![Est. Hours](https://img.shields.io/badge/Est.%20Hours-740%2B-red)]()
-[![Files](https://img.shields.io/badge/Files-20-purple)]()
+[![Files](https://img.shields.io/badge/Files-23-purple)]()
 
 > 🏗️ 一个持续更新的**开源自学平台**，覆盖大模型开发、软件设计师备考、Linux运维、Django开发、Python全栈、数据库、API、网络协议。
 > 📱💻 手机阅读 + 电脑编码，全程不依赖视频。  
@@ -312,8 +312,8 @@ cd learning-hub
 
 | 指标 | 数值 |
 |------|------|
-| 文件总数 | 20 个核心文件 |
-| 总行数 | 37,700 行 |
+| 文件总数 | 23 个核心文件 |
+| 总行数 | 48,500 行 |
 | 大模型学习材料 | 80+ 篇（含论文、源码、文档链接） |
 | 软考真题覆盖 | 近 8 年 16 套 |
 | 计划项目数 | 12+ 个 GitHub 项目 |
