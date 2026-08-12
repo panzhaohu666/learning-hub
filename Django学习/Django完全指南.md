@@ -2304,7 +2304,7 @@ def my_view(request):
         raise
 ```
 
-### 16.1.2 缓存框架
+### 17.1.2 缓存框架
 
 Django 内置强大的缓存系统，支持多种后端。
 ```python

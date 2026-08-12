@@ -2874,7 +2874,7 @@ Go build something amazing. 🚀
 
 每个项目至少包含以下内容（面试官会先看 README）：
 
-```markdown
+````markdown
 # 项目名称
 
 ## 简介
@@ -2917,7 +2917,7 @@ project/
 - [ ] 支持中文文本生成
 - [ ] 加入 RoPE 位置编码
 - [ ] 尝试 Flash Attention 加速
-```
+````
 
 ### ⚡ 快速参考卡——常用命令速查（面试前 30 分钟再看一遍）
 
