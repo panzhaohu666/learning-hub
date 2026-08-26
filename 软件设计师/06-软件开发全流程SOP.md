@@ -738,8 +738,8 @@ flowchart TD
     START["选择 Git 工作流"] --> Q1{"需要维护<br/>多个版本吗?"}
     Q1 -->|是| Q2{"版本周期?"}
     Q1 -->|否| Q3{"团队规模?"}
-    Q2 -->|长周期(月)| GF["✅ Git Flow<br/>master/develop/feature/release/hotfix"]
-    Q2 -->|短周期(周)| GF2["⚠️ GitHub Flow<br/>+ release 分支"]
+    Q2 -->|长周期（月）| GF["✅ Git Flow<br/>master/develop/feature/release/hotfix"]
+    Q2 -->|短周期（周）| GF2["⚠️ GitHub Flow<br/>+ release 分支"]
     Q3 -->|≤ 5 人| TBD["✅ Trunk-Based<br/>直接在 main 上短分支"]
     Q3 -->|6-20 人| GH["✅ GitHub Flow<br/>feature → PR → main"]
     Q3 -->|> 20 人| GF3["GitHub Flow<br/>+ CODEOWNERS + 分支保护"]
