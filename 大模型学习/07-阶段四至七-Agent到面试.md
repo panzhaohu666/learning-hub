@@ -3020,8 +3020,8 @@ CLIP:           4亿图文对训练 → 学会"理解图片内容"，还能 zero
 | x = x + Attn(LN(x))  | Pre-LN 残差连接 | 第20周 |
 | delta_W = B × A, rank=r | LoRA 低秩分解 | 第22周 |
 | L_DPO = -log(sigma(beta*(log P(c)-log P(r)))) | DPO 损失 | 第23周 |
-| P(seq) = prod_i P(w_i|w_{i-1},...,w_1) | 自回归生成 | 第20周 |
-| cos(A,B) = A·B/(|A||B|) | 余弦相似度（RAG检索） | 第18周 |
+| P(seq) = prod_i P(w_i\|w_{i-1},...,w_1) | 自回归生成 | 第20周 |
+| cos(A,B) = A·B/(\|A\|\|B\|) | 余弦相似度（RAG检索） | 第18周 |
 
 ### 🎓 大模型岗位薪资参考（2024-2025中国市场）
 
