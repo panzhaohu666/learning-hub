@@ -2041,7 +2041,7 @@ class DeepSeekClient(LLMClient):
     def __init__(self, api_key):
         self.api_key = api_key
 
-    def chat(self, messages, model="deepseek-chat", **kwargs):
+    def chat(self, messages, model="deepseek-v4-flash", **kwargs):
         user_msg = messages[-1]["content"] if messages else ""
         return f"[DeepSeek/{model}] 你说了：{user_msg}"
 
@@ -2704,7 +2704,7 @@ print(parsed["data"]["temp"])      # 25
 
 # 场景二：保存和恢复配置
 config = {
-    "model": "deepseek-chat",
+    "model": "deepseek-v4-flash",
     "temperature": 0.7,
     "max_tokens": 2048,
 }
@@ -2713,7 +2713,7 @@ with open("config.json", "w", encoding="utf-8") as f:
 
 with open("config.json", "r", encoding="utf-8") as f:
     cfg = json.load(f)
-print(cfg["model"])                # deepseek-chat
+print(cfg["model"])                # deepseek-v4-flash
 ```
 ### 13.4 datetime：日期与时间
 ```python

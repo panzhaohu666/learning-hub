@@ -168,7 +168,7 @@ chain = prompt | debug_print | llm | output_parser
 
 # ① 定义 LLM（和阶段一一样，DeepSeek API）
     llm = ChatOpenAI(
-        model="deepseek-chat",
+        model="deepseek-v4-flash",
         api_key="你的Key",
         base_url="https://api.deepseek.com",
         temperature=0
@@ -213,7 +213,7 @@ prompt.format(**input) → LLM 调用 → StrOutputParser 提取结果
 ```python
     def translate_plain(text, target_lang):
         response = client.chat.completions.create(
-            model="deepseek-chat",
+            model="deepseek-v4-flash",
             messages=[
                 {"role": "system", "content": f"你是翻译助手，把输入翻译成{target_lang}"},
                 {"role": "user", "content": text}
@@ -297,7 +297,7 @@ BaseChatMessageHistory：存消息的底层（可以存内存/Redis/数据库）
     from langchain_community.chat_message_histories import ChatMessageHistory
     from langchain_core.output_parsers import StrOutputParser
 
-llm = ChatOpenAI(model="deepseek-chat", api_key="你的Key",
+llm = ChatOpenAI(model="deepseek-v4-flash", api_key="你的Key",
 base_url="https://api.deepseek.com")
 
 # 定义一个带"历史占位符"的 Prompt
@@ -447,7 +447,7 @@ def search_knowledge(query: str) -> str:
 
 # ===== 绑定工具到 LLM =====
     tools = [get_weather, calculator, search_knowledge]
-    llm = ChatOpenAI(model="deepseek-chat", api_key="你的Key",
+    llm = ChatOpenAI(model="deepseek-v4-flash", api_key="你的Key",
                      base_url="https://api.deepseek.com")
     llm_with_tools = llm.bind_tools(tools)
 
@@ -1890,7 +1890,7 @@ MoE 模型（Mixtral 8×7B）：
                           → 专家2（70亿） ↗
   每个 token 只经过 2 个专家 ≈ 140亿参数的计算量
   但模型总共约 470 亿参数（激活约 130 亿）
-  → 效果接近 560亿模型，计算量只有 140亿的水平！
+  → 效果接近 470亿模型，计算量只有约 130亿的水平！
 ```
 
 - [ ] 阶段六完成检查
