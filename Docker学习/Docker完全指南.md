@@ -35,7 +35,7 @@
 💻 实操：晚上在电脑上照着敲，每章都有可运行的最小示例
 ```
 
-章节分两类：**概念章**（一、三、六、八、九、十三）用手机读两遍即可；**实操章**（二、四、五、七、十、十一、十二、十四）必须亲手敲一遍。本指南与两条学习主线的对应关系：
+章节分两类：**概念章**（一、三、八、九、十三）用手机读两遍即可；**实操章**（二、四、五、六、七、十、十一、十二、十四）必须亲手敲一遍。本指南与两条学习主线的对应关系：
 
 | 本仓库路线 | 需要 Docker 的地方 | 对应章节 |
 |-----------|-------------------|---------|
@@ -1068,7 +1068,7 @@ docker compose down
 | `restart` | 重启策略 | `unless-stopped` |
 | `command` | 覆盖镜像默认启动命令 | `command: ["uvicorn", "main:app", "--host", "0.0.0.0"]` |
 | `healthcheck` | 健康检查 | 见 7.6 节 |
-| `deploy.resources` | 资源限制 | 见 7.4 节示例 |
+| `deploy.resources` | 资源限制（GPU/CPU/内存） | 见 12.6 节示例 |
 
 一个包含多种字段的完整示例：
 
@@ -1433,7 +1433,8 @@ docker run -d --name web --network my-net nginx
 docker run -d --name app --network my-net myapp:v1
 
 # 在 app 容器里直接 ping web（自定义网络自动 DNS）
-docker exec app ping web
+# 注意：python:3.11-slim / nginx 等镜像不带 ping 命令，改用 alpine（自带 busybox ping）验证：
+docker run --rm --network my-net alpine ping -c2 web
 # 输出：PING web (172.19.0.2) ...（自动解析到 IP）
 
 # 连接已有的容器进网络

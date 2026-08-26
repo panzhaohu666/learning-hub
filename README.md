@@ -2,9 +2,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen)]()
-[![Total Lines](https://img.shields.io/badge/Total%20Lines-65%2C000-blue)]()
+[![Total Lines](https://img.shields.io/badge/Total%20Lines-66%2C000-blue)]()
 [![Guides](https://img.shields.io/badge/Guides-16%20topics-orange)]()
-[![Est. Hours](https://img.shields.io/badge/Est.%20Hours-800%2B-red)]()
+[![Est. Hours](https://img.shields.io/badge/Est.%20Hours-1%2C000%2B-red)]()
 [![Files](https://img.shields.io/badge/Files-29-purple)]()
 
 > 🏗️ 一个持续更新的**开源自学平台**，覆盖大模型开发、软件设计师备考、Linux运维、Django开发、Python全栈、数据库、API、网络协议。
@@ -331,13 +331,13 @@ cd learning-hub
 | 指标 | 数值 |
 |------|------|
 | 文件总数 | 29 个核心文件 |
-| 总行数 | 65,000 行 |
+| 总行数 | 66,000 行 |
 | 大模型学习材料 | 80+ 篇（含论文、源码、文档链接） |
 | 软考真题覆盖 | 近 8 年 16 套 |
 | 计划项目数 | 12+ 个 GitHub 项目 |
 | GPU 预算 | ¥2,000-4,000（半年） |
 | 每周学习时间 | ~18.5 小时（工作日手机 5h + 电脑 10h + 周六 3.5h） |
-| 总学习时间 | ~740 小时（含软考） |
+| 总学习时间 | ~1,000 小时（含软考 + 基础前置） |
 
 ---
 

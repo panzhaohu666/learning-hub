@@ -1143,6 +1143,7 @@ const age = 18;
 const type = age >= 18 ? '成年人' : '未成年人';
 
 // 空值合并 ??：左边是 null/undefined 时用右边
+const username = null;      // 先给个变量，方便下面演示
 const name = username ?? '匿名';
 
 // 注意：+ 号遇字符串就拼接
@@ -1160,7 +1161,8 @@ console.log('1' + 2);    // '12'，不是 3！数字先被转成了字符串
 
 if (0) { console.log('不会执行'); }
 if ([]) { console.log('会执行，空数组也是真'); }
-if (name) { console.log('name 有值才执行'); }   // 常用写法
+const name2 = '小明';
+if (name2) { console.log('name2 有值才执行'); }   // 常用写法
 ```
 
 ### 4.4 字符串与模板字符串 💻

@@ -171,7 +171,7 @@ commit 5c4b3a (第1次提交)  ─── snapshot: 全部文件的完整状态
 
 ## 二、安装与初始配置
 
-> 💻 电脑实操（30-40 分钟）：一次性配置好，之后十年不用再碰。本节分两步：装 Git（2.1-2.3）、连 GitHub（2.4-2.9）。
+> 💻 电脑实操（30-40 分钟）：一次性配置好，之后十年不用再碰。本节分两步：装 Git 与本地配置（2.1-2.5）、连 GitHub（2.6-2.9）。
 
 ### 2.1 安装 Git
 
@@ -1425,20 +1425,16 @@ commit 信息用中文，格式按第四章：`动作：对象 — 说明`。
 **第 4 步：推送到你的 Fork（终端操作）**：
 
 ```bash
-git push origin feature/fix-python-example
-```
-
-第一次推新分支时，Git 可能提示：
-
-```
-fatal: The current branch feature/fix-python-example has no upstream branch.
-```
-
-意思是这条分支还没和远程绑定。Git 会教你下一步，或者直接跑：
-
-```bash
 git push -u origin feature/fix-python-example
 ```
+
+`-u`（`--set-upstream`）把本地分支和远程 `origin/feature/fix-python-example` 绑定。以后在这条分支上直接敲 `git push` 就行，不用再写全 `origin 分支名`。
+
+> ⚠️ **常见报错**：如果第一次推送时**没加 `-u`，之后又直接敲裸 `git push`**（不带 origin 和分支名），Git 会提示：
+> ```
+> fatal: The current branch feature/fix-python-example has no upstream branch.
+> ```
+> 意思是这条分支还没和远程绑定。解决：补一次 `git push -u origin feature/fix-python-example` 即可（注意：`git push origin 分支名` 这种写全参数的推法本身不会报这个错）。
 
 推送成功后会看到：
 
@@ -1682,7 +1678,7 @@ git status
 
 # 方法二：用 git check-ignore 精确查询（-v 显示是哪条规则匹配的）
 git check-ignore -v .env
-# .env:9:.env        ← 表示第 9 行的规则 .env 匹配了它
+# .gitignore:9:.env	.env        ← 源文件:行号:规则，然后 tab 分隔、最后是被匹配的路径
 
 git check-ignore -v __pycache__/x.py
 ```
@@ -1797,8 +1793,9 @@ git commit --amend -m "修复：正确的提交信息"
 # 症状：git branch -D 删掉了 feature/important
 # 1. 找分支最后指向的提交
 git reflog
-# 输出里找到类似：1a2b3c feature/important@{0}: branch: Created from main
-# 或者最近的提交记录里找到那个分支的最后 hash
+# 输出里找到类似：a24a920 HEAD@{1}: commit: feature work
+#                 05abe63 HEAD@{2}: checkout: moving from main to feature/important
+# 也就是在 checkout / commit 记录里找那个分支最后的提交 hash
 
 # 2. 从该提交重新拉出分支
 git switch -c feature/important 1a2b3c

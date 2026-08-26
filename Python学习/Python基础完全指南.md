@@ -874,7 +874,7 @@ nums = [5, 2, 9, 1, 7]
 print(len(nums))     # 5，长度
 print(max(nums))     # 9，最大值
 print(min(nums))     # 1，最小值
-print(sum(nums))     # 24，求和（字符串/元组不行，只适合数字）
+print(sum(nums))     # 24，求和（元素必须是数字，字符串会报错）
 
 # sorted：返回排序后的新列表，不修改原序列
 print(sorted(nums))           # [1, 2, 5, 7, 9]
@@ -2246,6 +2246,9 @@ print(f"总价：{price * quantity:.2f} 元")
 > 💻 本章实操性强，每个示例都要建真实文件跑一遍。json（10.6）和 with（10.4）是后面 TODO 项目和阶段一 ChatBot 记忆功能的直接依赖。
 ### 10.1 open()：打开文件
 读写文件的第一步是 `open()` 打开它，返回一个**文件对象**。
+
+> ⚠️ **先建文件**：下面的示例读的是 `hello.txt`，请先在工作目录创建它（`echo "你好，世界" > hello.txt`，或用 `Path("hello.txt").write_text("你好，世界", encoding="utf-8")`）。否则第一次照抄会抛 `FileNotFoundError`。
+
 ```python
 # 语法：open(路径, 模式, encoding=编码)
 f = open("hello.txt", "r", encoding="utf-8")

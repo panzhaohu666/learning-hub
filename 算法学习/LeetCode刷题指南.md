@@ -1535,7 +1535,9 @@ def backtrack(参数):
         撤销选择           # path.pop() / used[i] = False
 ```
 
-**去重套路（含重复元素时）**：先排序，然后在 for 循环里跳过"和前一个相同且前一个没用过"的元素：
+**去重套路（含重复元素时）**：先排序，然后跳过重复分支。注意：组合/子集和排列的去重判据**不一样**，别混用。
+
+组合 / 子集（用 `start` 参数，对应 40 组合总和 II、90 子集 II）——跳过"本层内"与前一个相同的元素：
 
 ```python
 nums.sort()
@@ -1543,6 +1545,22 @@ for i in range(start, len(nums)):
     if i > start and nums[i] == nums[i - 1]:
         continue      # 跳过重复分支，防止生成重复方案
     ...
+```
+
+排列（用 `used` 数组，对应 47 全排列 II）——跳过"与前一个相同且前一个还没用过"的元素：
+
+```python
+nums.sort()
+for i in range(len(nums)):
+    if i > 0 and nums[i] == nums[i - 1] and not used[i - 1]:
+        continue      # 相同的值，且前一个同值元素还没用，说明这一层会重复
+    if used[i]:
+        continue
+    used[i] = True
+    path.append(nums[i])
+    dfs(path)
+    path.pop()
+    used[i] = False
 ```
 
 **典型题目**：22 括号生成、39 组合总和、46 全排列、78 子集、79 单词搜索。

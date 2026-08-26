@@ -31,6 +31,7 @@
 
 > **目标**：能用 Python 独立写命令行工具、处理数据、理解面向对象
 > **检验标准**：LeetCode 简单题 30+ 道独立完成
+> 📖 **配套教材**：本仓库 `Python学习/Python基础完全指南.md`（零基础→装饰器，与 Python-100-Days 互为补充，中文手册风格 + 命令行 TODO 实战）
 
 ### 核心教程
 
@@ -1179,6 +1180,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 > **检验标准**：独立完成后台管理系统前端（登录 + 列表 + 表单 + 图表）
 
 > 🧭 **前端框架选择指南**：本计划主线使用 **React + Next.js + TypeScript**（国际市场最大、岗位最多）。如果你主要面向**国内中小型公司**，可以考虑 **Vue 3 + Nuxt**（国内流行度极高，学习曲线更平缓，Python-100-Days 自带 Vue 入门）。核心 JS/TS/CSS 基础同样适用，切换成本可控。**建议按主线走 React，如果后续发现国内岗位普遍要求 Vue，补 2 周即可切换。**
+> 📖 **配套教材**：本仓库 `前端学习/前端基础HTML-CSS-JS指南.md`（HTML/CSS/原生 JS + 3 个可运行实战 + fetch 对接后端）——建议在 5A 之前先过一遍，框架才能学得动。
 
 ### 子阶段 5A：Web 前端基础 + TypeScript 入门（1.5 周）
 
@@ -1507,6 +1509,7 @@ function ArticleList() {
 
 > **目标**：能把全栈项目部署到服务器，配置 CI/CD 自动部署
 > **检验标准**：访问一个公网域名能看到你的项目运行
+> 📖 **配套教材**：本仓库 `Docker学习/Docker完全指南.md`（Dockerfile/Compose/数据卷/网络 + MySQL 全家桶与 Dify 部署实战）——比外部教程更贴合本计划的部署场景，第 19 周直接用它。
 
 ### 学习清单
 
