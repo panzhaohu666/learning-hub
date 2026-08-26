@@ -51,7 +51,7 @@
 11. [GraphQL 入门](#十一graphql-入门)
     - [REST vs GraphQL 深入对比](#111-rest-vs-graphql-深入对比)
     - [Schema 定义与类型系统](#112-schema-定义与类型系统)
-    - [Query、Mutation、Subscription](#113-query-mutation-subscription)
+    - [Query、Mutation、Subscription](#113-querymutationsubscription)
     - [Python Strawberry 实战](#114-python-strawberry-实战)
     - [N+1 问题与 DataLoader](#115-n1-问题与-dataloader)
 12. [gRPC 与 Protobuf](#十二grpc-与-protobuf)
