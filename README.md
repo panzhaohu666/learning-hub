@@ -2,10 +2,10 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen)]()
-[![Total Lines](https://img.shields.io/badge/Total%20Lines-48%2C500-blue)]()
-[![Guides](https://img.shields.io/badge/Guides-10%20topics-orange)]()
-[![Est. Hours](https://img.shields.io/badge/Est.%20Hours-740%2B-red)]()
-[![Files](https://img.shields.io/badge/Files-23-purple)]()
+[![Total Lines](https://img.shields.io/badge/Total%20Lines-65%2C000-blue)]()
+[![Guides](https://img.shields.io/badge/Guides-16%20topics-orange)]()
+[![Est. Hours](https://img.shields.io/badge/Est.%20Hours-800%2B-red)]()
+[![Files](https://img.shields.io/badge/Files-29-purple)]()
 
 > 🏗️ 一个持续更新的**开源自学平台**，覆盖大模型开发、软件设计师备考、Linux运维、Django开发、Python全栈、数据库、API、网络协议。
 > 📱💻 手机阅读 + 电脑编码，全程不依赖视频。  
@@ -180,6 +180,24 @@ learning-hub/
 │
 ├── 网络协议学习/
 │   └── 网络协议学习手册.md               ← TCP/IP四层模型：Ethernet/ARP/IP/CIDR/TCP/UDP/DNS/HTTP/TLS/CDN/负载均衡/代理/VPN/Docker网络等
+│
+├── Python学习/                           ← 🆕 零基础起步必读
+│   └── Python基础完全指南.md              ← 零基础→装饰器·命令行TODO实战·衔接大模型阶段二
+│
+├── Git学习/
+│   └── Git与GitHub完全指南.md             ← 零基础→分支/冲突/PR流程·每周push工作流
+│
+├── Docker学习/
+│   └── Docker完全指南.md                  ← 零基础→Dockerfile/Compose·Dify与vLLM部署实战
+│
+├── 前端学习/
+│   └── 前端基础HTML-CSS-JS指南.md          ← HTML/CSS/JS·fetch对接后端·衔接Django模板
+│
+├── 算法学习/
+│   └── LeetCode刷题指南.md                ← Hot100分类速查·高频模板·衔接阶段七面试
+│
+├── 数学学习/
+│   └── 机器学习数学速成.md                ← 线代/微积分/概率/信息论·NumPy验证·衔接阶段三
 
 └── 软件设计师/
     ├── 01-备考总纲.md                   ← 考试结构·三阶段路线图·考点速记
@@ -239,11 +257,11 @@ cd learning-hub
 - 🔹 **计算机专业在校生，需要系统学习路线** —— 从 Token 到 Mini-GPT，循序渐进
 - 🔹 **软考备考者，需要详细的每日计划** —— 上午题 12 模块 + 下午题 5 题型，精确到天
 - 🔹 **只能用碎片时间自学的任何人** —— 手机阅读的设计哲学贯穿始终
+- 🔹 **完全零编程基础** —— 先从 `Python学习/Python基础完全指南.md` 补上 Python 地基，再进主线
 
 ### ❌ 这份计划不适合你如果：
 
 - ❌ 想通过看视频学习的（本计划全程文字材料）
-- ❌ 零编程基础（需要至少会 Python 基础语法）
 - ❌ 想要"21天速成"的（6 个月 480 小时，没有捷径）
 
 ---
@@ -259,7 +277,7 @@ cd learning-hub
 <details>
 <summary><b>Q: 我一点机器学习基础都没有，能直接开始吗？</b></summary>
 
-**能。** 这份计划的前两周就是从零开始的——Token 是什么、Prompt 怎么写、怎么在本地跑一个模型。机器学习基础在第 8 周才正式开始，前面 7 周你在积累"手感"。前提是你至少会写 Python（函数、列表、字典、文件读写这些）。
+**能。** 这份计划的前两周就是从零开始的——Token 是什么、Prompt 怎么写、怎么在本地跑一个模型。机器学习基础在第 8 周才正式开始，前面 7 周你在积累"手感"。前提是你至少会写 Python（函数、列表、字典、文件读写这些）。如果还不会，先花 2-3 周过一遍 `Python学习/Python基础完全指南.md`，再回来。
 </details>
 
 <details>
@@ -312,8 +330,8 @@ cd learning-hub
 
 | 指标 | 数值 |
 |------|------|
-| 文件总数 | 23 个核心文件 |
-| 总行数 | 48,500 行 |
+| 文件总数 | 29 个核心文件 |
+| 总行数 | 65,000 行 |
 | 大模型学习材料 | 80+ 篇（含论文、源码、文档链接） |
 | 软考真题覆盖 | 近 8 年 16 套 |
 | 计划项目数 | 12+ 个 GitHub 项目 |
@@ -324,6 +342,8 @@ cd learning-hub
 ---
 
 ## ⚡ 快速开始（第 0 周）
+
+> 🧰 **零基础先补地基**：如果没写过 Python，先花 2-3 周过 `Python学习/Python基础完全指南.md` + `Git学习/Git与GitHub完全指南.md`（每周 push 一次的习惯从第一天建立），再回来做下面的环境准备。
 
 在正式学习前，先完成环境准备：
 
