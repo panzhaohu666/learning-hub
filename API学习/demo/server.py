@@ -109,7 +109,7 @@ async def root():
             "创建图书": "POST /api/books",
             "更新图书": "PUT /api/books/{id}",
             "删除图书": "DELETE /api/books/{id}",
-            "搜索图书": "GET /api/books/search?q=关键词",
+            "搜索图书": "GET /api/books?q=关键词",
             "统计信息": "GET /api/stats",
         },
     }
@@ -140,7 +140,7 @@ async def list_books(
             b for b in results
             if q_lower in b["title"].lower() or q_lower in b["author"].lower()
         ]
-    if year:
+    if year is not None:
         results = [b for b in results if b["year"] == year]
 
     # 2. 排序（按 ID 倒序）

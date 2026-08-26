@@ -620,7 +620,7 @@ Chunk Overlap（重叠）：
     print(f"分割为 {len(chunks)} 个文本块")
 
 # === 3. Embedding 模型 ===
-    from langchain_community.embeddings import HuggingFaceEmbeddings
+    from langchain_huggingface import HuggingFaceEmbeddings  # pip install langchain-huggingface
     embeddings = HuggingFaceEmbeddings(
         model_name="BAAI/bge-small-zh-v1.5",  # 中文友好，轻量
         model_kwargs={'device': 'cpu'},
@@ -1203,6 +1203,7 @@ torch.multinomial（按概率采样）vs torch.argmax（只选最高概率）—
             self.c_proj = nn.Linear(d_model, d_model)        # 输出投影
             self.n_heads = n_heads
             self.d_k = d_model // n_heads
+            self.dropout = nn.Dropout(dropout)
             self.register_buffer("mask",
                 torch.tril(torch.ones(block_size, block_size))
                 .view(1, 1, block_size, block_size))
@@ -1402,8 +1403,13 @@ def get_batch(data, batch_size, block_size):
     model = GPT(vocab_size=50257, d_model=256, n_heads=8, n_layers=6,
                 block_size=256, dropout=0.1)
     optimizer = torch.optim.AdamW(model.parameters(), lr=3e-4)
+    # 数据与超参：vocab_size、batch/block 尺寸需提前定义
+    vocab_size = 50257
+    batch_size = 16
+    block_size = 256
+    data = [1, 2, 3, 4, ...]  # 示例：整段文本经 tiktoken 编码后的 token id 列表
     for step in range(5000):
-        x, y = get_batch("train")
+        x, y = get_batch(data, batch_size, block_size)
         logits = model(x)
         loss = F.cross_entropy(logits.view(-1, vocab_size), y.view(-1))
         optimizer.zero_grad()
@@ -1672,7 +1678,7 @@ L_DPO = -log(σ(β × (log P_model(chosen) - log P_ref(chosen))
     from trl import DPOTrainer
     dpo_trainer = DPOTrainer(
         model=model, ref_model=ref_model,
-        beta=0.1,  # DPO 温度：越大越保守
+        beta=0.1,  # DPO 温度：越大越自由（偏离 reference 越远），越小越保守
         train_dataset=dpo_dataset,
         tokenizer=tokenizer,
         args=TrainingArguments(output_dir="./dpo", per_device_train_batch_size=2)
@@ -1743,6 +1749,7 @@ async def send_request(session, url, prompt):
 
 async def benchmark(url, prompt, n=100, concurrency=10):
     latencies = []
+    start_wall = time.perf_counter()
     async with aiohttp.ClientSession() as session:
         tasks = []
         for _ in range(n):
@@ -1750,8 +1757,13 @@ async def benchmark(url, prompt, n=100, concurrency=10):
             if len(tasks) >= concurrency:
                 results = await asyncio.gather(*tasks)
                 latencies.extend(results); tasks = []
+        if tasks:  # 收尾：n 不是 concurrency 整数倍时，还有未 await 的尾部任务
+            results = await asyncio.gather(*tasks)
+            latencies.extend(results)
+    wall_time = time.perf_counter() - start_wall
     latencies = np.array(latencies)
-    print(f"吞吐: {n/sum(latencies):.1f} req/s")
+    # 并发压测下吞吐 = 请求总数 / 总墙钟时间（各请求延迟重叠，求和会低估吞吐）
+    print(f"吞吐: {n/wall_time:.1f} req/s")
     print(f"P50: {np.percentile(latencies,50):.2f}s, P99: {np.percentile(latencies,99):.2f}s")
 
 asyncio.run(benchmark("http://localhost:8000/v1/chat/completions", "请用300字介绍人工智能"))
@@ -1877,7 +1889,7 @@ MoE 模型（Mixtral 8×7B）：
   输入 → Router（路由器） → 专家1（70亿） → 输出
                           → 专家2（70亿） ↗
   每个 token 只经过 2 个专家 ≈ 140亿参数的计算量
-  但模型总共 = 8 × 70亿 = 560亿参数
+  但模型总共约 470 亿参数（激活约 130 亿）
   → 效果接近 560亿模型，计算量只有 140亿的水平！
 ```
 
@@ -2547,27 +2559,27 @@ Head 1: q1 = x[:, 2:] = [[0.2,0.1],[0.9,0.4],[0.1,0.6]]
 
 步骤3: 计算 Attention 分数 (Head 0)
 scores = q0 @ q0^T / sqrt(2)
-       = [[1.25, 1.01, 0.55],
-          [1.01, 0.84, 0.37],
+       = [[1.25, 0.95, 0.55],
+          [0.95, 0.73, 0.37],
           [0.55, 0.37, 0.53]] / 1.414
-       = [[0.88, 0.71, 0.39],
-          [0.71, 0.59, 0.26],
+       = [[0.88, 0.67, 0.39],
+          [0.67, 0.52, 0.26],
           [0.39, 0.26, 0.37]]
 
 步骤4: Causal Mask（只看左边）
 [[0.88, -inf, -inf],     # token 0 只看自己
- [0.71, 0.59, -inf],     # token 1 看 0,1
+ [0.67, 0.52, -inf],     # token 1 看 0,1
  [0.39, 0.26, 0.37]]     # token 2 看全部
 
 步骤5: Softmax（每行独立归一化）
 [[1.00, 0.00, 0.00],     # exp(0.88)/sum
- [0.53, 0.47, 0.00],
- [0.34, 0.29, 0.37]]
+ [0.54, 0.46, 0.00],
+ [0.35, 0.31, 0.34]]
 
 步骤6: 加权求和
 output[0] = 1.00*v0 + 0.00*v1 + 0.00*v2 = v0
-output[1] = 0.53*v0 + 0.47*v1
-output[2] = 0.34*v0 + 0.29*v1 + 0.37*v2
+output[1] = 0.54*v0 + 0.46*v1
+output[2] = 0.35*v0 + 0.31*v1 + 0.34*v2
 ```
 
 **核心洞察**：

@@ -55,7 +55,7 @@ Django 是一个高级 Python Web 框架，由经验丰富的开发者构建，�
 如果你从 4.x 或 5.x 升级，6.0 带来以下变化：
 | 特性 | 说明 |
 |------|------|
-| **主键默认 BigAutoField** | `DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"`，无需手动配置 |
+| **主键默认 BigAutoField** | `DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"`，自 3.2 起默认，无需手动配置 |
 | **CSP 中间件** | 内置 `ContentSecurityPolicyMiddleware`，防 XSS |
 | **Template Partials** | `{% partialdef %}` 和 `{% partial %}` 标签，模板组件化 |
 | **内置后台任务框架** | `django.tasks` 模块，简单任务无需引入 Celery |
@@ -340,9 +340,11 @@ class Tag(models.Model):
 
 ### 4.3 数据库迁移
 ```bash
-# 生成迁移文件（类似 git commit）python manage.py makemigrations
+# 生成迁移文件（类似 git commit）
+python manage.py makemigrations
 
-# 应用迁移到数据库（类似 git push）python manage.py migrate
+# 应用迁移到数据库（类似 git push）
+python manage.py migrate
 
 # 查看迁移 SQL（预览）
 python manage.py sqlmigrate blog 0001
@@ -388,7 +390,8 @@ Post.objects.values('category').annotate(count=Count('id'))
 post = Post.objects.get(id=1)
 post.category.name
 
-# 反向：分类 → 文章（用 related_name）category = Category.objects.get(id=1)
+# 反向：分类 → 文章（用 related_name）
+category = Category.objects.get(id=1)
 category.posts.all()
 category.posts.filter(status='published')
 
@@ -499,8 +502,7 @@ class BlogConfig(AppConfig):
 Django 6.0 新增了 `django.tasks` 模块，简单场景可替代 Celery。
 ```python
 # settings.py
-DJANGO_TASK_BACKEND = 'django.tasks.backends.immediate.ImmediateBackend'
-# 生产环境建议替换为 django-tasks 的数据库后端或 Redis 后端
+TASKS = {"default": {"BACKEND": "django.tasks.backends.immediate.ImmediateBackend"}}
 
 
 # 定义任务
@@ -542,7 +544,8 @@ class Post(models.Model):
 
     class Meta:
         indexes = [
-            # 单字段索引（效果等同于 db_index=True）            models.Index(fields=['status']),
+            # 单字段索引（效果等同于 db_index=True）
+            models.Index(fields=['status']),
 
             # 复合索引：按状态 + 时间排序查询
             models.Index(fields=['status', '-created_at'], name='status_date_idx'),
@@ -646,7 +649,7 @@ class PostDeleteView(DeleteView):
 | `FormView` | 处理表单 |
 | `RedirectView` | 重定向 |
 
-### 5.4 异步视图（Django 6.0）
+### 5.4 异步视图（自 Django 3.1 起支持）
 Django 6.0 支持 `async def` 视图，适合处理并发 I/O 密集型请求：
 
 ```python
@@ -662,17 +665,9 @@ async def async_view(request):
 
 # 异步 CBV
 from django.views import View
-from django.utils.decorators import classonlymethod
-import asyncio
 
 
 class AsyncView(View):
-    @classonlymethod
-    def as_view(cls, **initkwargs):
-        view = super().as_view(**initkwargs)
-        view._is_coroutine = asyncio.coroutines._is_coroutine
-        return view
-
     async def get(self, request):
         data = await self.fetch_remote_data()
         return JsonResponse(data)
@@ -682,7 +677,7 @@ class AsyncView(View):
         return {'status': 'ok'}
 ```
 
-> **注意**：异步 ORM 仍在完善中（仅支持 `aget`、`acreate`、`abulk_create` 等少数操作），简单 CRUD 使用同步视图即可。异步视图主要优势在于同时调用多个外部 API、WebSocket 等场景。
+> **注意**：异步 ORM 支持 20+ 异步方法（`aget`/`afirst`/`acount`/`aexists`/`acreate`/`abulk_create`/`aupdate`/`adelete`/`aiterator` 等），简单 CRUD 使用同步视图即可。异步视图主要优势在于同时调用多个外部 API、WebSocket 等场景。
 >
 > **部署异步视图必须使用 ASGI**：Gunicorn（WSGI）无法执行 `async def` 视图。改用：
 > ```bash
@@ -931,7 +926,6 @@ Django 6.0 新增了 `{% partialdef %}` 和 `{% partial %}` 标签，让模板�
 ```html+django
 {# blog/index.html — 在页面中使用组件 #}
 {% extends 'base.html' %}
-{% load partials %}
 
 {% block content %}
 <h1>文章列表</h1>
@@ -973,7 +967,8 @@ Django 6.0 新增了 `{% partialdef %}` 和 `{% partial %}` 标签，让模板�
 ### 7.1 基本配置
 
 ```python
-# myproject/urls.py — 项目根路由from django.contrib import admin
+# myproject/urls.py — 项目根路由
+from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
@@ -1023,7 +1018,8 @@ path('post/<uuid:id>/', views.detail)      # /post/550e8400-e29b-...
 # 模板中：
 {% url 'blog:post_detail' slug=post.slug %}
 
-# Python 代码中：from django.urls import reverse
+# Python 代码中：
+from django.urls import reverse
 url = reverse('blog:post_detail', kwargs={'slug': 'hello-world'})
 
 # 带命名空间 + 绝对 URL
@@ -1144,7 +1140,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class PostInline(admin.TabularInline):
-    """在分类页面内联显示文章""
+    """在分类页面内联显示文章"""
     model = Post
     extra = 0
 
@@ -1166,8 +1162,8 @@ class PostAdmin(admin.ModelAdmin):
     # 编辑页
     fieldsets = [
         ('基本信息', {'fields': ['title', 'slug', 'content']}),
-        ('分类与标签, {'fields': ['category', 'tags']}),
-        ('状态, {'fields': ['status']}),
+        ('分类与标签', {'fields': ['category', 'tags']}),
+        ('状态', {'fields': ['status']}),
     ]
     filter_horizontal = ['tags']  # 多对多选择器
     # 自定义动作
@@ -1296,7 +1292,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 @login_required
 def my_view(request):
-    """只有登录用户能访问""
+    """只有登录用户能访问"""
     pass
 
 # 类视图中使用 Mixin
@@ -1349,14 +1345,17 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
         'OPTIONS': {
-            'min_length': 12,  # 最短长度（Django 默认 8，生产建议 12）        }
+            'min_length': 12,  # 最短长度（Django 默认 8，生产建议 12）
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-        # 拒绝常见弱密码（如 password123、qwerty）    },
+        # 拒绝常见弱密码（如 password123、qwerty）
+    },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-        # 拒绝纯数字密码    },
+        # 拒绝纯数字密码
+    },
 ]
 ```
 
@@ -1385,7 +1384,8 @@ def login_view(request):
 # settings.py
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',    # 项目级静态文件]
+    BASE_DIR / 'static',    # 项目级静态文件
+]
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # 收集后的目录（生产环境用）
 ```
 
@@ -1429,7 +1429,6 @@ LANGUAGE_CODE = 'zh-hans'       # 默认语言：简体中文
 TIME_ZONE = 'Asia/Shanghai'     # 时区
 
 USE_I18N = True                 # 启用国际化
-USE_L10N = True                 # 启用本地化
 USE_TZ = True                   # 使用时区感知的 datetime
 ```
 
@@ -1521,7 +1520,7 @@ logger = logging.getLogger(__name__)
 
 
 class RequestTimingMiddleware:
-    """记录每个请求的处理时间""
+    """记录每个请求的处理时间"""
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -1548,7 +1547,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'blog.middleware.RequestTimingMiddleware',   # 自定义]
+    'blog.middleware.RequestTimingMiddleware',   # 自定义
+]
 ```
 
 **注意**：顺序很重要：- `SecurityMiddleware` 应在最前面
@@ -1566,21 +1566,19 @@ MIDDLEWARE = [
 ]
 
 # CSP 策略配置
-CONTENT_SECURITY_POLICY = {
-    "DIRECTIVES": {
-        # 脚本只允许本站和 CDN
-        "script-src": ["'self'", "https://cdn.jsdelivr.net"],
-        # 样式允许本站和 Bootstrap CDN
-        "style-src": ["'self'", "https://cdn.jsdelivr.net", "'unsafe-inline'"],
-        # 图片允许本站和外部图片
-        "img-src": ["'self'", "data:", "https://*.example.com"],
-        # 字体允许本站
-        "font-src": ["'self'"],
-        # 禁止 iframe 被嵌入
-        "frame-ancestors": ["'none'"],
-    },
+SECURE_CSP = {
+    # 脚本只允许本站和 CDN
+    "script-src": ["'self'", "https://cdn.jsdelivr.net"],
+    # 样式允许本站和 Bootstrap CDN
+    "style-src": ["'self'", "https://cdn.jsdelivr.net", "'unsafe-inline'"],
+    # 图片允许本站和外部图片
+    "img-src": ["'self'", "data:", "https://*.example.com"],
+    # 字体允许本站
+    "font-src": ["'self'"],
+    # 禁止 iframe 被嵌入
+    "frame-ancestors": ["'none'"],
     # 只报告不拦截（调试阶段，上线后去掉此行即可开启拦截）
-    # "REPORT_ONLY": True,
+    # "report_only": True,
 }
 ```
 **安全配置速查**（Django 自带 + 推荐的安保护）：
@@ -1604,9 +1602,11 @@ CONTENT_SECURITY_POLICY = {
 ### 14.1 运行测试
 
 ```bash
-# 运行所有测试python manage.py test
+# 运行所有测试
+python manage.py test
 
-# 运行特定 app 的测试python manage.py test blog
+# 运行特定 app 的测试
+python manage.py test blog
 
 # 运行特定测试文件
 python manage.py test blog.tests
@@ -1814,7 +1814,7 @@ class PostViewSet(viewsets.ModelViewSet):
     ordering = ['-created_at']
 
     def get_permissions(self):
-        """创建/编辑/删除需要登录，查看不需要""
+        """创建/编辑/删除需要登录，查看不需要"""
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]
@@ -1990,7 +1990,8 @@ SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-# 数据库（改用 PostgreSQL 或 MySQL）DATABASES = {
+# 数据库（改用 PostgreSQL 或 MySQL）
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'mydatabase',
@@ -2001,9 +2002,11 @@ SECURE_HSTS_PRELOAD = True
     }
 }
 
-# 静态文件STATIC_ROOT = BASE_DIR / 'staticfiles'
+# 静态文件
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# 邮件配置（Django 6.0 新式 API）MAILERS = {
+# 邮件配置（Django 6.0 新式 API）
+MAILERS = {
     'default': {
         'BACKEND': 'django.core.mail.backends.smtp.EmailBackend',
         'OPTIONS': {
@@ -2315,9 +2318,10 @@ CACHES = {
     }
 }
 
-# 生产环境推荐 Redis（需 pip install django-redis）CACHES = {
+# 生产环境推荐 Redis（需 pip install django-redis）
+CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': 'redis://127.0.0.1:6379/1',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
@@ -2329,7 +2333,8 @@ CACHES = {
 **三种使用方式：*
 
 ```python
-# 方式一：页面缓存（URL 级别）from django.views.decorators.cache import cache_page
+# 方式一：页面缓存（URL 级别）
+from django.views.decorators.cache import cache_page
 
 @cache_page(60 * 15)  # 缓存 15 分钟
 def post_list(request):
@@ -2441,8 +2446,11 @@ AUTH_USER_MODEL = 'accounts.User'
 python manage.py startapp app_name          # 创建 app
 python manage.py makemigrations             # 生成迁移
 python manage.py migrate                    # 应用迁移
-python manage.py createsuperuser            # 创建管理员python manage.py collectstatic              # 收集静态文件python manage.py shell                      # Django shell
-python manage.py shell_plus                 # 增强 shell（需 django-extensions）python manage.py dbshell                    # 数据库 shell
+python manage.py createsuperuser            # 创建管理员
+python manage.py collectstatic              # 收集静态文件
+python manage.py shell                      # Django shell
+python manage.py shell_plus                 # 增强 shell（需 django-extensions）
+python manage.py dbshell                    # 数据库 shell
 python manage.py test                       # 运行测试
 python manage.py runserver 0.0.0.0:8000     # 启动服务器
 python manage.py showmigrations             # 查看迁移状态

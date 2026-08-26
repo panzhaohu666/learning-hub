@@ -228,7 +228,7 @@ Content-Length: 156                              ←
              405 Method Not Allowed  方法不允许（如对只读接口发 POST）
              422 Unprocessable       参数格式正确但语义错误
              429 Too Many Requests   请求频率过高
-5xx  服务端  500 Internal Server    服务器内部错误
+5xx  服务端  500 Internal Server Error    服务器内部错误
              502 Bad Gateway         网关错误（上游服务挂了）
              503 Service Unavailable 服务暂时不可用（维护中）
              504 Gateway Timeout     网关超时
@@ -639,8 +639,8 @@ paths:
 ```
 
 **有了 OpenAPI 规范，自动生成**：
-- 📄 **Swagger UI** — 交互式文档页面（`/api/docs`），可以直接在网页上测试 API
-- 📘 **ReDoc** — 更美观的只读文档（`/api/redoc`）
+- 📄 **Swagger UI** — 交互式文档页面（`/docs`），可以直接在网页上测试 API
+- 📘 **ReDoc** — 更美观的只读文档（`/redoc`）
 - 🔧 **自动生成客户端代码**（Python / JS / Go / Java ...）
 
 **Python FastAPI 示例**（自动生成 OpenAPI）：
@@ -1255,7 +1255,7 @@ class Mutation:
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
 app = FastAPI(title="GraphQL 图书管理")
-app.include_router(GraphQLRouter(schema, path="/graphql"), prefix="/graphql")
+app.include_router(GraphQLRouter(schema, path="/graphql"))
 
 if __name__ == "__main__":
     import uvicorn
@@ -1422,7 +1422,6 @@ async def get_context():
 app = FastAPI()
 app.include_router(
     GraphQLRouter(schema, path="/graphql", context_getter=get_context),
-    prefix="/graphql",
 )
 
 if __name__ == "__main__":
@@ -1481,7 +1480,7 @@ gRPC（Google Remote Procedure Call）是 Google 开源的高性能 RPC 框架�
 | 特性 | 说明 | 对比 REST |
 |------|------|----------|
 | **Protobuf 序列化** | 二进制格式，体积比 JSON 小 3-10 倍 | JSON 是文本，冗余大 |
-| **HTTP/2 多路复用** | 一个 TCP 连接承载多个请求/响应 | HTTP/1.1 每个请求一个连接 |
+| **HTTP/2 多路复用** | 一个 TCP 连接承载多个请求/响应 | HTTP/1.1 默认持久连接（keep-alive），HTTP/1.0 才默认每请求一连接 |
 | **强类型契约** | `.proto` 文件定义接口，自动生成客户端/服务端代码 | REST 靠文档约定 |
 | **四种通信模式** | 一元、服务端流、客户端流、双向流 | REST 只有请求-响应 |
 
@@ -1838,7 +1837,6 @@ WebSocket 聊天室服务端
 """
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
-from typing import list
 
 app = FastAPI(title="WebSocket 聊天室")
 
@@ -2065,7 +2063,7 @@ GET /api/v2/books       # 版本 2
 POST /api/v2/books      # 版本 2 的创建接口
 ```
 
-✅ 直观，URL 一眼看出版本 | ✅ 方便 Nginx/CDN 按版本路由 | ✅ 最常用（Stripe、GitHub、Twilio）
+✅ 直观，URL 一眼看出版本 | ✅ 方便 Nginx/CDN 按版本路由 | ✅ 最常用（Stripe、Twilio）
 
 **方式二：请求头版本**
 
@@ -2375,7 +2373,7 @@ if __name__ == "__main__":
 **测试限流效果**：
 
 ```bash
-# 快速连续发送 15 个请求——前 10 个通过，后 5 个被限流
+# 快速连续发送 15 个请求——初始满桶（容量 20）下 15 个全部通过；超过容量后开始限流
 for i in $(seq 1 15); do
   curl -s -o /dev/null -w "请求 $i: HTTP %{http_code}\n" http://localhost:8000/api/test
 done
@@ -2683,7 +2681,7 @@ locust -f locustfile.py --host=http://localhost:8000
 
 📱 **阅读：API 上线后，你需要盯哪些指标？**
 
-**四大黄金指标（RED 方法）**：
+**RED 方法（Rate / Errors / Duration）+ USE 方法（Saturation 等）**：
 
 | 指标 | 英文 | 计算方式 | 告警阈值示例 |
 |------|------|---------|------------|

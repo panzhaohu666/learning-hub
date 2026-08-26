@@ -114,7 +114,7 @@ Linux 一切皆文件，没有 Windows 的 C 盘 D 盘概念，只有一个根�
 ├── /sbin                 # 系统管理命令（需要 root 权限）
 ├── /srv                  # 服务数据（Web 服务器文件等）
 ├── /sys                  # 内核与设备信息
-├── /tmp                  # 临时文件（重启后清理）
+├── /tmp                  # 临时文件（定期自动清理，约 30 天）
 ├── /usr                  # 用户程序和数据
 │   ├── /usr/bin          # 用户命令
 │   ├── /usr/lib          # 库文件
@@ -631,7 +631,7 @@ chgrp -R developers folder/     # 递归修改
 ```bash
 umask                           # 查看当前掩码
 umask 022                       # 设置掩码（新文件默认 644，新目录默认 755）
-# 计算公式：新文件权限 = 666 - umask  新目录权限 = 777 - umask
+# 计算公式：新文件权限 = 0666 & ~umask（新目录 = 0777 & ~umask；简化式仅对常规掩码成立）
 ```
 
 #### `sudo` — 以超级用户身份执行命令
@@ -1811,7 +1811,7 @@ ssh-copy-id user@host
 # PasswordAuthentication no    # 只允许密钥登录
 # MaxAuthTries 3               # 限制尝试次数
 
-sudo systemctl restart sshd    # 修改后重启 SSH 服务
+sudo systemctl restart ssh     # 修改后重启 SSH 服务（Ubuntu 服务名为 ssh）
 ```
 
 ### 6.2 防火墙
@@ -1842,6 +1842,7 @@ sudo firewall-cmd --reload
 # iptables（底层，功能最强但也最复杂）
 sudo iptables -L                    # 查看规则
 sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT  # 允许 80 端口
+sudo mkdir -p /etc/iptables                         # 目录默认不存在，先创建
 sudo iptables-save > /etc/iptables/rules.v4         # 保存规则
 ```
 
@@ -1983,7 +1984,7 @@ free -h                                 # 查看内存
 ps aux --sort=-%mem | head -10          # 找出内存占用最高的进程
 
 # 进程僵死
-ps aux | grep Z                         # 查找僵尸进程（状态为 Z）
+ps aux | awk '$8 ~ /Z/'                 # 查找僵尸进程（状态为 Z，grep Z 会误匹配命令行含 Z 的进程）
 
 # 网络不通
 ping 8.8.8.8                            # 测试外网
@@ -2354,12 +2355,13 @@ volumes:
 ```
 
 ```bash
-docker-compose up -d                  # 启动所有服务（后台）
-docker-compose down                   # 停止并删除所有服务
-docker-compose down -v                # 同时删除数据卷
-docker-compose ps                     # 查看服务状态
-docker-compose logs -f                # 查看所有服务日志
-docker-compose restart                # 重启所有服务
+docker compose up -d                  # 启动所有服务（后台）
+docker compose down                   # 停止并删除所有服务
+docker compose down -v                # 同时删除数据卷
+docker compose ps                     # 查看服务状态
+docker compose logs -f                # 查看所有服务日志
+docker compose restart                # 重启所有服务
+# 注意：Ubuntu 24.04 无 docker-compose 命令，只有 docker compose 插件
 ```
 
 ### 9.7 常用场景
@@ -2410,6 +2412,9 @@ sudo mysql_secure_installation
 ```sql
 -- 登录
 mysql -u root -p
+-- 注：Ubuntu 默认 root 走 auth_socket 插件，直接 -p 登录会失败；
+-- 需先 sudo mysql 进入，再执行：
+-- ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY '新密码';
 
 -- 数据库操作
 SHOW DATABASES;                              -- 查看所有数据库
@@ -2455,11 +2460,11 @@ FLUSH PRIVILEGES;                             -- 刷新权限
 
 ```bash
 # 备份
-mysqldump -u root -p mydb > mydb_backup.sql
+mysqldump -u root -p mydb > mydb_backup.sql  # 同上：root 走 auth_socket 时先 sudo mysql 设置密码
 mysqldump -u root -p --all-databases > all_backup.sql
 
 # 恢复
-mysql -u root -p mydb < mydb_backup.sql
+mysql -u root -p mydb < mydb_backup.sql  # 同上：root 走 auth_socket 时先 sudo mysql 设置密码
 ```
 
 ### 10.2 PostgreSQL
@@ -2570,7 +2575,7 @@ dig @8.8.8.8 google.com                 # 指定 DNS 服务器查询
 
 # 查看 DNS 配置
 cat /etc/resolv.conf                    # 当前 DNS 设置
-systemd-resolve --status                # systemd 管理的 DNS（Ubuntu 18+）
+resolvectl status                        # systemd 管理的 DNS（较新版本用 resolvectl）
 
 # hosts 文件
 cat /etc/hosts                          # 本地 DNS 映射
@@ -2906,10 +2911,10 @@ bat file.txt                    # 语法高亮显示
 bat --show-all file.txt         # 显示不可见字符
 # 注意：Ubuntu 上命令可能是 batcat
 
-# exa / eza — 现代化的 ls（需安装: sudo apt install exa）
-exa -la                         # 替代 ls -la
-exa --tree --level=2            # 树形显示
-exa -l --git                    # 显示 git 状态
+# eza — 现代化的 ls（需安装: sudo apt install eza；exa 已从 Ubuntu 24.04 移除）
+eza -la                         # 替代 ls -la
+eza --tree --level=2            # 树形显示
+eza -l --git                    # 显示 git 状态
 
 # ripgrep (rg) — 超快的 grep 替代品（需安装: sudo apt install ripgrep）
 rg "keyword"                    # 递归搜索
@@ -2918,9 +2923,10 @@ rg --type py "def main"         # 只在 Python 文件中搜索
 rg -C 3 "error"                 # 显示上下文
 
 # fd — 超快的 find 替代品（需安装: sudo apt install fd-find）
-fd "*.txt"                      # 替代 find . -name "*.txt"
-fd -e py                        # 所有 .py 文件
-fd -t d                         # 所有目录
+# 注意：Ubuntu 上命令为 fdfind，可 alias fd='fdfind' 后按下方示例使用
+fdfind "*.txt"                  # 替代 find . -name "*.txt"
+fdfind -e py                    # 所有 .py 文件
+fdfind -t d                     # 所有目录
 
 # zoxide — 智能目录跳转（需安装: sudo apt install zoxide）
 z project                       # 跳转到最常访问的匹配目录

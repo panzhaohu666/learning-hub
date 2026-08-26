@@ -198,7 +198,7 @@ print(f"b2 梯度差异: {(d_b2 - b2_a.grad).abs().max():.10f}")
 - 防止神经元之间"共谋"（co-adaptation）
 - 等同于训练多个子网络并取平均（集成学习的效果）
 
-测试时：不关闭任何神经元，但权重乘以 (1-p) 来补偿。
+训练时：随机丢弃，并把保留的神经元输出除以 (1-p) 补偿；测试时：不丢弃、不缩放，直接原样输出。
 
 重要：Dropout 只在训练时生效！model.train() / model.eval()
 影响 Dropout 的行为。
@@ -242,7 +242,7 @@ LayerNorm：对每个样本，用 128 个 features 的均值和方差归一化
 **3. LayerNorm 的训练/推理区别**
 
 训练时：用当前 batch 的均值/方差
-推理时：用训练时累积的 running mean/var（和 BatchNorm 一样）
+推理时：和训练一样，按当前样本的特征维度即时计算均值/方差（LayerNorm 没有 running 统计量）
 
 > 💡 **Aha Moment**：LayerNorm 之所以在 Transformer 中"赢了"BN，是因为它天然适合序列数据。每个位置的归一化只依赖它自己，不需要等 batch 里的其他样本——这让它在 batch_size=1 时也能正常工作。这就是为什么大模型推理时（逐 token 生成）不受影响。
 
@@ -534,7 +534,7 @@ def preprocess_chinese(text):
 # 测试
 text = "自然语言处理是人工智能的一个重要方向，近年来发展迅速"
 print(preprocess_chinese(text))
-# ['自然语言', '处理', '人工智能', '一个', '重要', '方向', '近年', '发展', '迅速']
+# ['自然语言', '处理', '人工智能', '重要', '方向', '近年', '发展', '迅速']
 
 ```
 ### 星期二
@@ -598,7 +598,7 @@ restored = tokenizer.decode(ids)
 print(restored)  # 我 喜 欢 学 习 人 工 智 能（空格分隔）
 
 ```
-> ⚠️ **为什么中文 BERT 把每个字都拆开了？** 因为 BERT 中文版用的是字级别的 BPE（Character-level）。这不是 bug，是设计选择——中文"词"的边界模糊，"人工智能"是"人工"+"智能"还是"人"+"工"+"智能"？字级别避免了分词歧义。
+> ⚠️ **为什么中文 BERT 把每个字都拆开了？** 因为 BERT 中文版用的是字级别的 WordPiece（Character-level）。这不是 bug，是设计选择——中文"词"的边界模糊，"人工智能"是"人工"+"智能"还是"人"+"工"+"智能"？字级别避免了分词歧义。
 
 ### 星期四
 BERT Fine-tune 文本分类（完整版）
@@ -636,7 +636,7 @@ output_dir="./bert-finetuned",
 num_train_epochs=5,
 per_device_train_batch_size=16,
 per_device_eval_batch_size=64,
-evaluation_strategy="epoch",    # 每个 epoch 评估一次
+eval_strategy="epoch",    # 每个 epoch 评估一次
       save_strategy="epoch",          # 每个 epoch 保存
       load_best_model_at_end=True,    # 训练完加载最佳模型
       metric_for_best_model="f1",
@@ -1096,7 +1096,7 @@ PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))
 直觉：不同频率的正弦/余弦波编码了不同的位置模式。
 位置相近的向量也相近（因为连续函数）。
 
-> 💡 **Aha Moment**：为什么不用"可学习的"位置编码（像 BERT 那样）？正弦 PE 的最大优点是**外推**——训练时的 max_len=512，但推理时可以用 1024。可学习的 PE 不行——位置 513 的 embedding 根本不存在。这就是为什么有些模型（如 LLaMA）虽然用了可学习的（RoPE），但设计了特殊的旋转编码来支持外推。
+> 💡 **Aha Moment**：为什么不用"可学习的"位置编码（像 BERT 那样）？正弦 PE 的最大优点是**外推**——训练时的 max_len=512，但推理时可以用 1024。可学习的 PE 不行——位置 513 的 embedding 根本不存在。这就是为什么有些模型（如 LLaMA）用 RoPE（旋转位置编码，不可学习，是固定旋转变换），通过旋转编码支持外推。
 
 优点：不需要学习参数，能外推到训练时没见过的长度。
 
@@ -1400,28 +1400,26 @@ x = layer(x, enc_output, src_mask, tgt_mask)
 
 return self.fc_out(x)  # (batch, tgt_len, tgt_vocab_size)
 
+def _generate_square_subsequent_mask(self, sz):
+          return torch.tril(torch.ones(sz, sz)).bool()
+
 def generate(self, src, max_len, start_token, end_token):
           """推理模式：自回归生成"""
           self.eval()
-          # Encode 源序列（只做一次）
-          with torch.no_grad():
-              enc_output = self.encoder(src)
-
-# 逐 token 生成
           generated = [start_token]
-          for _ in range(max_len):
-              tgt = torch.tensor([generated]).to(src.device)
-              # 构建因果 mask
-              tgt_mask = self._generate_square_subsequent_mask(len(generated))
-              # Decoder forward
-              output = self.forward(src, tgt, tgt_mask=tgt_mask)
-              # 取最后一个位置的预测
-              next_token = output[0, -1].argmax().item()
-              generated.append(next_token)
-              if next_token == end_token:
-                  break
-
-return generated
+          with torch.no_grad():
+              for _ in range(max_len):
+                  tgt = torch.tensor([generated]).to(src.device)
+                  # 构建因果 mask
+                  tgt_mask = self._generate_square_subsequent_mask(len(generated))
+                  # Decoder forward
+                  output = self.forward(src, tgt, tgt_mask=tgt_mask)
+                  # 取最后一个位置的预测
+                  next_token = output[0, -1].argmax().item()
+                  generated.append(next_token)
+                  if next_token == end_token:
+                      break
+          return generated
 
 ```
 验证清单（逐一确认）：

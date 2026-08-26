@@ -2,7 +2,7 @@
 
 > **路线**：后端 API → 全栈 Web → DevOps → 微服务
 > **目标岗位**：Python 全栈工程师 / 后端开发工程师
-> **时间**：全职 4-6 个月 / 在职 8-12 个月（每天 3-4h）
+> **时间**：全职 6-8 个月 / 在职 8-12 个月（每天 3-4h）
 > **核心思路**：学 60% 就开始做项目，项目驱动学习，不追求"学完再动手"
 
 ---
@@ -554,7 +554,7 @@ Python-100-Days Day36-45：
 
 | 主题 | 资源 | 时间 |
 |------|------|------|
-| Redis 基础（string/hash/list/set/zset） | [Redis 官方教程](https://try.redis.io/) | 2天 |
+| Redis 基础（string/hash/list/set/zset） | [Redis 官方教程](https://redis.io/docs/latest/) | 2天 |
 | Redis 缓存策略（穿透/击穿/雪崩） | 掘金/博客搜"Redis 缓存三大问题" | 1天 |
 | Python 操作 Redis（redis-py） | 官方文档 | 1天 |
 
@@ -795,7 +795,7 @@ SELECT * FROM orders WHERE amount > 900;
 | 材料 | 内容 | 预计时间 |
 |------|------|---------|
 | [《SQL 必知必会》](https://book.douban.com/subject/35167224/) | 短小精悍的 SQL 入门书，手机上看很适合 | 每天 10min |
-| [MySQL 索引连环问](https://xiaolincoding.com/mysql/index_interview.html)（小林 coding）| 图解索引，面试必看 | 每天 15min |
+| [MySQL 索引连环问](https://xiaolincoding.com/mysql/)（小林 coding）| 图解索引，面试必看 | 每天 15min |
 | [LeetCode SQL 题解](https://leetcode.cn/problemset/database/) 的官方题解 | 每道题看题解区的分析思路 | 每天 2 题 |
 | [Redis 核心技术与实战](https://time.geekbang.org/column/intro/100056701) 前 10 讲 | 极客时间专栏，碎片时间听/看 | 每天 1 讲 |
 | [MySQL 实战 45 讲](https://time.geekbang.org/column/intro/100020801) 前 20 讲 | 极客时间专栏，丁奇讲 MySQL 最好的中文资料 | 每天 1 讲 |
@@ -1651,6 +1651,14 @@ certbot renew --dry-run
 
 ```nginx
 # /etc/nginx/sites-available/myapp
+#
+# ⚠️ 注意：limit_req_zone 只能定义在 http 上下文（顶层），不能写在 server/location 块内。
+# 正确位置示例（/etc/nginx/nginx.conf 的 http { } 块内）：
+# http {
+#     limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+#     include /etc/nginx/sites-enabled/*;
+# }
+# 本文件只负责引用该 zone：
 server {
     listen 80;
     server_name 你的域名.com;
@@ -1693,8 +1701,7 @@ server {
         add_header Cache-Control "public, immutable";
     }
 
-    # 限制请求速率（防 DDoS）
-    limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+    # 限制请求速率（防 DDoS）——limit_req_zone 见上方 http 上下文注释示例
     location /api/ {
         limit_req zone=api burst=20 nodelay;
         # ... proxy_pass 配置同上
@@ -2458,7 +2465,7 @@ async def seckill(product_id: str, current_user = Depends(get_current_user)):
 | **1. Python 基础** | GIL/装饰器/生成器/上下文管理器/内存管理/深浅拷贝/可变不可变 | Python-100-Days Day99 + [Python 面试题合集](https://github.com/taizilongxu/interview_python) |
 | **2. 数据库** | 索引原理/最左前缀/慢查询优化/事务隔离级别/MVCC/分库分表 | Day93 + [MySQL 面试题](https://github.com/0voice/interview_internal_reference) |
 | **3. 网络** | TCP/UDP/HTTP/HTTPS/DNS/CDN/WebSocket/跨域/HTTP2/TCP拥塞控制 | 阶段2+6 所学内容复习 |
-| **4. 操作系统** | 进程/线程/协程、IO模型（阻塞/非阻塞/多路复用）、内存管理、文件系统 | [CS-Notes](http://www.cyc2018.xyz/) + 阶段6 Linux 实践联系 |
+| **4. 操作系统** | 进程/线程/协程、IO模型（阻塞/非阻塞/多路复用）、内存管理、文件系统 | [CS-Notes](https://github.com/CyC2018/CS-Notes) + 阶段6 Linux 实践联系 |
 | **5. Redis** | 数据结构/持久化/集群/缓存问题/分布式锁 | [Redis 面试题](https://github.com/CyC2018/CS-Notes/blob/master/notes/Redis.md) |
 | **6. 后端框架** | FastAPI 原理/中间件/依赖注入/ASGI/ORM N+1 问题 | 官方文档 + 源码阅读 |
 | **7. 前端** | React 原理（Virtual DOM/Fiber/Hooks）/Next.js SSR/TS 类型体操入门 | React 源码解析博客 + TS 文档 |
