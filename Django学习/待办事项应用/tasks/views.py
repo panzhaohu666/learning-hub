@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib import messages
 from .models import Task
 
@@ -66,6 +67,7 @@ def task_create(request):
 
 
 @login_required
+@require_POST
 def task_toggle(request, pk):
     """切换任务的完成状态（仅限自己的任务）"""
     task = get_object_or_404(Task, pk=pk, user=request.user)
@@ -75,6 +77,7 @@ def task_toggle(request, pk):
 
 
 @login_required
+@require_POST
 def task_delete(request, pk):
     """删除任务（仅限自己的任务）"""
     task = get_object_or_404(Task, pk=pk, user=request.user)
@@ -83,6 +86,7 @@ def task_delete(request, pk):
 
 
 @login_required
+@require_POST
 def task_clear_completed(request):
     Task.objects.filter(user=request.user, completed=True).delete()
     return redirect('task_list')

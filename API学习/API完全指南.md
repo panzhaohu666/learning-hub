@@ -96,9 +96,9 @@
 ```
 ┌───────────┐      请求(Request)      ┌───────────┐
 │           │ ──────────────────────→ │           │
-│  客户端    │    "给我今天的天气"       │  服务端    │
-│  (你的App) │ ←────────────────────── │  (API)    │
-│           │      响应(Response)      │           │
+│  客户端   │    "给我今天的天气"     │  服务端   │
+│  (你的App)│ ←────────────────────── │  (API)    │
+│           │      响应(Response)     │           │
 └───────────┘   {"temp":25,"weather": └───────────┘
                  "晴","city":"北京"}
 ```
@@ -311,7 +311,7 @@ query {
 | 类型 | 适用场景 | 特点 |
 |------|---------|------|
 | **WebSocket** | 聊天、实时通知、股票行情 | 全双工，服务端可主动推送 |
-| **gRPC** | 微服务间高性能通信 | Google 出品，基于 Protocol Buffers，比 REST 快 5-10 倍 |
+| **gRPC** | 微服务间高性能通信 | Google 出品，基于 Protocol Buffers（二进制序列化比 JSON 更紧凑），配合 HTTP/2 多路复用性能更优 |
 
 **四种类型对比**：
 
@@ -352,13 +352,13 @@ GET    /api/users/1/posts           GET    /api/getPostsByUser?userId=1
 
 **URL 命名规则**：
 - 全小写，用 `-` 分隔（不用 `_` 或驼峰）
-  - ✅ `/api/blog-posts` 
+  - ✅ `/api/blog-posts`
   - ❌ `/api/blogPosts` `/api/blog_posts`
 - 资源用**复数**名词
-  - ✅ `/api/users` 
+  - ✅ `/api/users`
   - ❌ `/api/user`
 - 避免过深嵌套（最多 3 层）
-  - ✅ `/api/users/1/posts` 
+  - ✅ `/api/users/1/posts`
   - ❌ `/api/users/1/posts/5/comments/8/replies`
 
 ### 4.3 请求与响应格式
@@ -517,12 +517,14 @@ Authorization: Basic YWRtaW46YWRtaW4xMjM=
 **JWT 结构**（三段，用 `.` 分隔）：
 
 ```
-eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
-│                      │                     │
-├── Header（头部）      ├── Payload（载荷）    ├── Signature（签名）
-│  算法 = HS256         │  user_id = 1         │  防篡改的签名
-│  类型 = JWT           │  exp = 过期时间       │
+eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxfQ.HqfBqMQXjCge8RyIepyGkT2arZPD62bIGwD36lKiUWk
+│                   │                  │
+├── Header（头部）  ├── Payload（载荷）├── Signature（签名）
+│  算法 = HS256     │  user_id = 1     │  防篡改的签名
+│  类型 = JWT       │  exp = 过期时间  │
 ```
+
+> 注：示例签名为 HMAC-SHA256 计算，所用密钥为 `your-256-bit-secret`（仅作演示）。
 
 **Python 示例**：
 ```python
@@ -557,19 +559,19 @@ print(posts.json())
 ```
 你的网站                       GitHub                     用户
   │                              │                         │
-  │  1. 用户点"用GitHub登录"       │                         │
+  │ 1. 用户点"用GitHub登录"      │                         │
   │ ────────────────────────────→│                         │
-  │                              │  2. 跳转 GitHub 授权页    │
+  │                              │   2. 跳转 GitHub 授权页 │
   │                              │ ←──────────────────────→│
-  │                              │  3. 用户点"同意授权"      │
-  │  4. GitHub 回调你的网站       │                         │
+  │                              │   3. 用户点"同意授权"   │
+  │ 4. GitHub 回调你的网站       │                         │
   │ ←────────────────────────────│                         │
-  │  带上授权码(code)             │                         │
+  │ 带上授权码(code)             │                         │
   │                              │                         │
-  │  5. 用 code 换 access_token   │                         │
+  │ 5. 用 code 换 access_token   │                         │
   │ ────────────────────────────→│                         │
   │ ←────────────────────────────│                         │
-  │  6. 用 token 拿用户信息        │                         │
+  │ 6. 用 token 拿用户信息       │                         │
   │ ────────────────────────────→│                         │
   │ ←── {name, email, avatar}────│                         │
 ```
@@ -1006,7 +1008,7 @@ A: API 是接口规范（告诉你 URL 和参数），SDK 是对 API 的封装�
 A: 不是，但 JSON 是主流（90%+）。XML 在老系统常见，Protobuf 在 gRPC 中常见。
 
 **Q: 怎么知道一个网站有没有 API？**
-A: 
+A:
 1. 搜 `网站名 + API` 或 `网站名 + developer`
 2. 打开浏览器开发者工具（F12）→ Network 标签 → 刷新页面 → 看有没有返回 JSON 的请求
 3. 在 [public-apis](https://github.com/public-apis/public-apis) 里搜
@@ -1021,7 +1023,7 @@ A: POST = 新建（发给集合），PUT = 替换（发给具体资源）。实�
 A: 浏览器的安全策略——API 服务器没允许你的域名跨域访问。解决：后端加 CORS 头，或用后端代理转发。
 
 **Q: API 的免费额度用完了怎么办？**
-A: 
+A:
 1. 等明天/下月重置
 2. 多注册几个账号（不推荐，违反 ToS）
 3. 找替代 API（public-apis 里有海量选择）
@@ -1467,9 +1469,9 @@ gRPC（Google Remote Procedure Call）是 Google 开源的高性能 RPC 框架�
 
 ```
 ┌──────────┐         ┌──────────────────┐         ┌──────────┐
-│ 客户端    │ ────→  │  gRPC Stub       │ ────→  │ 服务端    │
-│ stub =    │         │  (自动生成代码)    │         │ 函数实现  │
-│ Greeter() │ ←────  │                  │ ←────  │          │
+│ 客户端   │ ────→   │  gRPC Stub       │ ────→   │ 服务端   │
+│ stub =   │         │  (自动生成代码)  │         │ 函数实现 │
+│ Greeter()│ ←────   │                  │ ←────   │          │
 └──────────┘         └──────────────────┘         └──────────┘
         stub.SayHello("world")        →         def SayHello(name):
           就像调用本地函数                          return f"Hello {name}"
@@ -1786,25 +1788,26 @@ WebSocket 和普通 HTTP 的关键区别：HTTP 是「请求-响应」模式（�
 ```
 客户端                                    服务端
   │                                          │
-  │  ① 客户端发起 HTTP 请求（要求升级）        │
+  │ ① 客户端发起 HTTP 请求（要求升级）       │
   │ ──────────────────────────────────────→  │
   │  GET /chat HTTP/1.1                      │
   │  Host: example.com                       │
-  │  Upgrade: websocket          ← 关键！     │
-  │  Connection: Upgrade          ← 关键！     │
-  │  Sec-WebSocket-Key: dGhlIHNhbXBsZQ==     │  随机密钥
+  │ Upgrade: websocket          ← 关键！     │
+  │ Connection: Upgrade          ← 关键！    │
+  │  Sec-WebSocket-Key:                      │
+  │   dGhlIHNhbXBsZSBub25jZQ==               │  随机密钥
   │  Sec-WebSocket-Version: 13               │
   │                                          │
-  │  ② 服务端同意升级                          │
+  │ ② 服务端同意升级                         │
   │ ←──────────────────────────────────────  │
   │  HTTP/1.1 101 Switching Protocols        │  101 = 协议切换
   │  Upgrade: websocket                      │
   │  Connection: Upgrade                     │
   │  Sec-WebSocket-Accept: s3pPLMBi...       │  对 Key 的签名
   │                                          │
-  │  ③ TCP 连接保持，双方开始双向通信！        │
+  │ ③ TCP 连接保持，双方开始双向通信！       │
   │ ⇄══════════════════════════════════════⇄ │
-  │     帧（Frame）通信，不再走 HTTP 格式        │
+  │     帧（Frame）通信，不再走 HTTP 格式    │
 ```
 
 > **核心理解**：WebSocket 借 HTTP 完成「握手」，之后降级为 TCP 长连接，用自己的一套帧格式通信。这就是为什么它比 HTTP 轮询高效——不用每次重建连接、不用每次带 HTTP 头。
@@ -1947,7 +1950,7 @@ if __name__ == "__main__":
 | 心跳检测 | ❌ 需自己实现 ping/pong | ✅ 自动 |
 | 消息确认 | ❌ 无 | ✅ ACK 回调 |
 | 负载 | 轻量 | 较重（额外协议层） |
-| 浏览器兼容 | 现代浏览器 | IE9+（降级到轮询） |
+| 浏览器兼容 | 现代浏览器 | 现代浏览器（旧浏览器降级到轮询） |
 
 > **一句话建议**：如果是内部系统或现代浏览器 → 原生 WebSocket 够了。如果是对外的 SaaS 产品、需要兼容老浏览器、需要自动重连 → 用 Socket.IO。
 
@@ -2203,12 +2206,12 @@ A: v2 兼容所有 v1 数据格式，`first_name` 会从旧 `full_name` 中提�
 
 ```
 ┌─────────────┐
-│ 令牌生成器    │ → 每秒往桶里放 N 个令牌（桶容量上限 M）
+│ 令牌生成器  │ → 每秒往桶里放 N 个令牌（桶容量上限 M）
 └──────┬──────┘
        ↓
 ┌─────────────┐
-│  🎫🎫🎫 桶   │ ← 请求来了拿走一个令牌
-│   容量 M     │   没令牌 = 限流！
+│  🎫🎫🎫 桶  │ ← 请求来了拿走一个令牌
+│   容量 M    │   没令牌 = 限流！
 └─────────────┘
 
 特点：允许突发流量（桶里攒的令牌可以一次性用完）

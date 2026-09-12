@@ -9,7 +9,7 @@
 之前一切都在为它打基础，之后一切都在它上面构建。
 
 > 🔥 **这是一条分水岭。** 阶段三·上的 4 周 ML + PyTorch 是"准备弹药"，这 5 周是"上战场"。你将从深度学习基础一路杀到手写完整 Transformer——那个改变了整个 AI 行业的架构。
-> 
+>
 > 第 15 周是最重要的一周。当你写完 Transformer，你会真正理解 ChatGPT 的核心。之后的 Agent、RAG、微调——都是在 Transformer 的基础上盖楼。
 
 ### 第12周 · 主题：深度学习基础与训练技巧
@@ -259,7 +259,7 @@ LayerNorm：对每个样本，用 128 个 features 的均值和方差归一化
           super().__init__()
           self.p = p
 
-def forward(self, x):
+      def forward(self, x):
           if self.training:
               mask = (torch.rand_like(x) > self.p).float()
               return x * mask / (1 - self.p)  # 除以 (1-p) 补偿
@@ -324,17 +324,17 @@ Xavier 初始化 vs Kaiming 初始化 vs 随机小值
 
 
 ```python
-    from torch.cuda.amp import autocast, GradScaler
+from torch.amp import autocast, GradScaler
 
 scaler = GradScaler()
-with autocast():  # 自动用 fp16 计算（更快）
-        output = model(x)
-        loss = criterion(output, y)
+with autocast(device_type='cuda'):  # 自动用 fp16 计算（更快）
+    output = model(x)
+    loss = criterion(output, y)
 
-```
 scaler.scale(loss).backward()
 scaler.step(optimizer)
 scaler.update()
+```
 
 > 🚀 **为什么 AMP 让你"白嫖"速度**：现代 GPU 的 fp16 算力是 fp32 的 8-16 倍。autocast 自动判断哪些操作用 fp16（安全且快），哪些用 fp32（需要精度）。GradScaler 解决"小梯度在 fp16 中下溢（变成 0）"的问题——把 loss 先放大再 backprop，梯度也跟着放大了。
 
@@ -414,7 +414,7 @@ LSTM 改进：引入"门控"机制（遗忘门/输入门/输出门），选择�
               nn.Linear(hidden_dim, num_classes)
           )
 
-def forward(self, x, lengths):
+      def forward(self, x, lengths):
           # x: (batch, seq_len)
           embedded = self.embedding(x)
           # pack_padded_sequence 跳过 padding，加速计算
@@ -520,8 +520,8 @@ TF-IDF = 词频 × log(总文档数/包含该词的文档数)，用于找"重要
   import jieba, re
   from collections import Counter
 
-def preprocess_chinese(text):
-# 1. 去除非中文字符
+  def preprocess_chinese(text):
+      # 1. 去除非中文字符
       text = re.sub(r'[^\u4e00-\u9fff]', ' ', text)
       # 2. 分词
       words = jieba.lcut(text)
@@ -531,10 +531,10 @@ def preprocess_chinese(text):
       words = [w for w in words if w not in stopwords and len(w) > 1]
       return words
 
-# 测试
-text = "自然语言处理是人工智能的一个重要方向，近年来发展迅速"
-print(preprocess_chinese(text))
-# ['自然语言', '处理', '人工智能', '重要', '方向', '近年', '发展', '迅速']
+  # 测试
+  text = "自然语言处理是人工智能的一个重要方向，近年来发展迅速"
+  print(preprocess_chinese(text))
+  # ['自然语言', '处理', '人工智能', '重要', '方向', '近年', '发展', '迅速']
 
 ```
 ### 星期二
@@ -610,20 +610,21 @@ BERT Fine-tune 文本分类（完整版）
   from transformers import Trainer, TrainingArguments, EarlyStoppingCallback
   from datasets import Dataset
   import numpy as np
+  import torch
   from sklearn.metrics import accuracy_score, f1_score
 
-def compute_metrics(eval_pred):
-logits, labels = eval_pred
-preds = np.argmax(logits, axis=1)
-return {"accuracy": accuracy_score(labels, preds),
-"f1": f1_score(labels, preds, average='macro')}
+  def compute_metrics(eval_pred):
+      logits, labels = eval_pred
+      preds = np.argmax(logits, axis=1)
+      return {"accuracy": accuracy_score(labels, preds),
+              "f1": f1_score(labels, preds, average='macro')}
 
 model_name = "bert-base-chinese"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
 
-def tokenize_fn(examples):
-return tokenizer(examples["text"], padding=True, truncation=True, max_length=256)
+  def tokenize_fn(examples):
+      return tokenizer(examples["text"], padding=True, truncation=True, max_length=256)
 
 # 假设已有 train_texts, train_labels, test_texts, test_labels
 train_dataset = Dataset.from_dict({"text": train_texts, "label": train_labels})
@@ -672,12 +673,12 @@ GPT-2 文本生成
 model = GPT2LMHeadModel.from_pretrained("uer/gpt2-chinese-cluecorpussmall")
 tokenizer = GPT2Tokenizer.from_pretrained("uer/gpt2-chinese-cluecorpussmall")
 
-def generate(prompt, max_length=100, temperature=0.8, top_p=0.9):
-inputs = tokenizer(prompt, return_tensors="pt")
-outputs = model.generate(
-**inputs,
-max_length=max_length,
-temperature=temperature,   # 控制随机性：低=保守，高=疯狂
+  def generate(prompt, max_length=100, temperature=0.8, top_p=0.9):
+      inputs = tokenizer(prompt, return_tensors="pt")
+      outputs = model.generate(
+          **inputs,
+          max_length=max_length,
+          temperature=temperature,   # 控制随机性：低=保守，高=疯狂
           top_p=top_p,               # nucleus sampling
           do_sample=True,
           pad_token_id=tokenizer.eos_token_id,
@@ -842,13 +843,13 @@ d_k 很大时，QK^T 的值很大 → softmax 后梯度接近 0 → 学不动
 >        d_k─┘             d_k─┘
 >                        = (2, 4, 4)     ← (batch, seq_len, seq_len)
 >                        scores[i,j] = 第i个Q词和第j个K词的相关度
-> 
+>
 > Step ②:  / √d_k
 > scores / √4 = scores / 2       ← 形状不变
-> 
+>
 > Step ③:  softmax(dim=-1)
 > 每行变成概率分布（和为1）        ← 形状不变
-> 
+>
 > Step ④:  @ V
 > (2, 4, 4) @ (2, 4, 4) = (2, 4, 4) ← 和 Q 形状一样！
 > ```
@@ -882,33 +883,33 @@ output: (2, 4, 4) @ (2, 4, 4) = (2, 4, 4)  ← 和 Q 形状一样！
   import torch.nn.functional as F
   import math
 
-class ScaledDotProductAttention(nn.Module):
-"""手写注意力：Attention(Q,K,V) = softmax(QK^T/√d_k)V"""
+  class ScaledDotProductAttention(nn.Module):
+      """手写注意力：Attention(Q,K,V) = softmax(QK^T/√d_k)V"""
 
-def __init__(self, dropout=0.1):
+      def __init__(self, dropout=0.1):
           super().__init__()
           self.dropout = nn.Dropout(dropout)
 
-def forward(self, Q, K, V, mask=None):
+      def forward(self, Q, K, V, mask=None):
           """
           Q, K, V: (batch, n_heads, seq_len, d_k)
           mask: (batch, 1, seq_len, seq_len) or None
           """
           d_k = Q.size(-1)
 
-# ① Q @ K^T / √d_k
+          # ① Q @ K^T / √d_k
           scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)
           # scores: (batch, n_heads, seq_len, seq_len)
 
-# ② mask（可选：Decoder 需要遮住未来位置）
+          # ② mask（可选：Decoder 需要遮住未来位置）
           if mask is not None:
               scores = scores.masked_fill(mask == 0, float('-inf'))
 
-# ③ softmax
+          # ③ softmax
           attention_weights = F.softmax(scores, dim=-1)
           attention_weights = self.dropout(attention_weights)
 
-# ④ 加权求和
+          # ④ 加权求和
           output = torch.matmul(attention_weights, V)
           return output, attention_weights
 
@@ -977,7 +978,7 @@ V → [V₁, V₂, ..., Vₕ]
 ③ 将所有头的输出拼接 → 再经一次线性投影
 
 > 📐 **维度变换全景图**：
-> 
+>
 > ```
 > 输入:     (batch=2, seq=4, d_model=8)
 > 投影(每个): → (2, 4, 8)  # W_Q, W_K, W_V 都是 (8,8) 的线性层
@@ -1000,50 +1001,50 @@ MultiHead(Q,K,V) = Concat(head₁, ..., headₕ) W_O
           super().__init__()
           assert d_model % n_heads == 0, "d_model 必须能被 n_heads 整除"
 
-self.d_model = d_model
+          self.d_model = d_model
           self.n_heads = n_heads
           self.d_k = d_model // n_heads
 
-# 投影矩阵（注意：合并了所有头的投影，效率更高）
+          # 投影矩阵（注意：合并了所有头的投影，效率更高）
           self.W_Q = nn.Linear(d_model, d_model)
           self.W_K = nn.Linear(d_model, d_model)
           self.W_V = nn.Linear(d_model, d_model)
           self.W_O = nn.Linear(d_model, d_model)  # 输出投影
 
-self.attention = ScaledDotProductAttention(dropout)
+          self.attention = ScaledDotProductAttention(dropout)
 
-def split_heads(self, x):
+      def split_heads(self, x):
           """x: (batch, seq_len, d_model)
              → (batch, n_heads, seq_len, d_k)"""
           batch, seq_len, _ = x.shape
           x = x.view(batch, seq_len, self.n_heads, self.d_k)
           return x.transpose(1, 2)  # (batch, n_heads, seq_len, d_k)
 
-def combine_heads(self, x):
+      def combine_heads(self, x):
           """x: (batch, n_heads, seq_len, d_k)
              → (batch, seq_len, d_model)"""
           batch, _, seq_len, _ = x.shape
           x = x.transpose(1, 2)  # (batch, seq_len, n_heads, d_k)
           return x.reshape(batch, seq_len, self.d_model)
 
-def forward(self, Q, K, V, mask=None):
+      def forward(self, Q, K, V, mask=None):
           # 1. 线性投影
           Q = self.W_Q(Q)  # (batch, seq, d_model)
           K = self.W_K(K)
           V = self.W_V(V)
 
-# 2. 拆分为多头
+          # 2. 拆分为多头
           Q = self.split_heads(Q)  # (batch, n_heads, seq, d_k)
           K = self.split_heads(K)
           V = self.split_heads(V)
 
-# 3. 每个头独立做 Attention
+          # 3. 每个头独立做 Attention
           attn_out, attn_weights = self.attention(Q, K, V, mask)
 
-# 4. 合并多头
+          # 4. 合并多头
           attn_out = self.combine_heads(attn_out)  # (batch, seq, d_model)
 
-# 5. 输出投影
+          # 5. 输出投影
           return self.W_O(attn_out)
 
 # ========== 验证 ==========
@@ -1128,7 +1129,7 @@ FFN(x) = (SiLU(x @ W_gate) ⊙ (x @ W_up)) @ W_down
           pe[:, 1::2] = torch.cos(position * div_term)  # 奇数维度用 cos
           self.register_buffer('pe', pe.unsqueeze(0))   # (1, max_len, d_model)
 
-def forward(self, x):
+      def forward(self, x):
           # x: (batch, seq_len, d_model)
           return x + self.pe[:, :x.size(1), :]
 
@@ -1148,7 +1149,7 @@ def forward(self, x):
           self.dropout = nn.Dropout(dropout)
           self.activation = nn.GELU()  # 或 ReLU()
 
-def forward(self, x):
+      def forward(self, x):
           return self.fc2(self.dropout(self.activation(self.fc1(x))))
 
 ```
@@ -1198,9 +1199,9 @@ def forward(self, x):
 
 ```python
 def encoder_layer(x):
-         x = LayerNorm(x + MultiHeadAttention(x, x, x))
-         x = LayerNorm(x + FeedForward(x))
-         return x
+    x = LayerNorm(x + MultiHeadAttention(x, x, x))
+    x = LayerNorm(x + FeedForward(x))
+    return x
 
 ```
 **2. 残差连接（Residual Connection）的作用**
@@ -1234,19 +1235,19 @@ x → EncoderLayer₁ → EncoderLayer₂ → ... → EncoderLayerₙ → output
           self.norm2 = nn.LayerNorm(d_model)
           self.dropout = nn.Dropout(dropout)
 
-def forward(self, x, mask=None):
+      def forward(self, x, mask=None):
           # 1. Self-Attention + 残差 + Norm
           attn_out = self.self_attn(x, x, x, mask)
           x = self.norm1(x + self.dropout(attn_out))
 
-# 2. FFN + 残差 + Norm
+          # 2. FFN + 残差 + Norm
           ff_out = self.feed_forward(x)
           x = self.norm2(x + self.dropout(ff_out))
 
-return x
+          return x
 
-class TransformerEncoder(nn.Module):
-def __init__(self, vocab_size, d_model, n_heads, d_ff, n_layers, dropout=0.1):
+  class TransformerEncoder(nn.Module):
+      def __init__(self, vocab_size, d_model, n_heads, d_ff, n_layers, dropout=0.1):
           super().__init__()
           self.embedding = nn.Embedding(vocab_size, d_model)
           self.pos_encoding = SinusoidalPositionalEncoding(d_model)
@@ -1256,17 +1257,17 @@ def __init__(self, vocab_size, d_model, n_heads, d_ff, n_layers, dropout=0.1):
           ])
           self.dropout = nn.Dropout(dropout)
 
-def forward(self, x, mask=None):
+      def forward(self, x, mask=None):
           # Token Embedding + Positional Encoding
           x = self.embedding(x) * math.sqrt(self.embedding.embedding_dim)
           x = self.pos_encoding(x)
           x = self.dropout(x)
 
-# 逐层通过 Encoder
+          # 逐层通过 Encoder
           for layer in self.layers:
               x = layer(x, mask)
 
-return x
+          return x
 
 # ⚠️ 架构注释：这是 Post-LN（原论文风格）
 #    写法：y = LayerNorm(x + Sublayer(x))
@@ -1341,20 +1342,20 @@ softmax(-inf) = 0 → 这些位置的注意力权重为 0。
           self.norm3 = nn.LayerNorm(d_model)
           self.dropout = nn.Dropout(dropout)
 
-def forward(self, x, enc_output, src_mask=None, tgt_mask=None):
+      def forward(self, x, enc_output, src_mask=None, tgt_mask=None):
           # 1. Masked Self-Attention（只能看当前及之前位置）
           attn_out = self.self_attn(x, x, x, tgt_mask)
           x = self.norm1(x + self.dropout(attn_out))
 
-# 2. Cross-Attention（用 Decoder 的 Q 查 Encoder 的 K,V）
+          # 2. Cross-Attention（用 Decoder 的 Q 查 Encoder 的 K,V）
           attn_out = self.cross_attn(x, enc_output, enc_output, src_mask)
           x = self.norm2(x + self.dropout(attn_out))
 
-# 3. FFN
+          # 3. FFN
           ff_out = self.feed_forward(x)
           x = self.norm3(x + self.dropout(ff_out))
 
-return x
+          return x
 
 ```
 > 📐 **Decoder Layer 的三层结构**：
@@ -1386,24 +1387,24 @@ return x
           self.fc_out = nn.Linear(d_model, tgt_vocab_size)
           self.dropout = nn.Dropout(dropout)
 
-def forward(self, src, tgt, src_mask=None, tgt_mask=None):
+      def forward(self, src, tgt, src_mask=None, tgt_mask=None):
           # Encoder
           enc_output = self.encoder(src, src_mask)
 
-# Decoder
+          # Decoder
           x = self.decoder_embedding(tgt) * math.sqrt(d_model)
           x = self.decoder_pos(x)
           x = self.dropout(x)
 
-for layer in self.decoder_layers:
-x = layer(x, enc_output, src_mask, tgt_mask)
+          for layer in self.decoder_layers:
+              x = layer(x, enc_output, src_mask, tgt_mask)
 
-return self.fc_out(x)  # (batch, tgt_len, tgt_vocab_size)
+          return self.fc_out(x)  # (batch, tgt_len, tgt_vocab_size)
 
-def _generate_square_subsequent_mask(self, sz):
+      def _generate_square_subsequent_mask(self, sz):
           return torch.tril(torch.ones(sz, sz)).bool()
 
-def generate(self, src, max_len, start_token, end_token):
+      def generate(self, src, max_len, start_token, end_token):
           """推理模式：自回归生成"""
           self.eval()
           generated = [start_token]
@@ -1429,7 +1430,7 @@ def generate(self, src, max_len, start_token, end_token):
 - [ ] generate() 能自回归生成 token 序列
 
 > 🎇 **你做到了。** 你面前的代码——从 Scaled Dot-Product Attention 到完整的 Encoder-Decoder Transformer——就是 **Vaswani et al. (2017) "Attention Is All You Need"** 的核心实现。
-> 
+>
 > 当然，工业级的 Transformer 还有更多细节（Pre-LN、混合精度、分布式训练），但架构的核心——你已经完全掌握了。
 
 - ⭐ 把这个 Transformer 类和本周所有模块的代码 push 到 GitHub！
@@ -1477,7 +1478,7 @@ Decoder 回顾 + GPT-2 Fine-tuning（HF Trainer）
 ### 星期二
 P-Tuning v2 概念 + 简单实验
 
-> P-Tuning：不在原模型上改参数，而是在输入前面加一些可学习的"虚拟 token"。只训练这些虚拟 token 的 embedding，模型参数完全冻结 → 每个任务只需要存几十 KB 的"提示词 embedding"。
+> P-Tuning v2：不在原模型上改参数，而是在**每一层**的输入前都加入可训练的连续 prompt token（相比 v1 只在输入层加，v2 是"深层 prompt"）。模型参数完全冻结，只训练这些 prompt token。
 
 ### 星期三
 LoRA 概念理解（低秩分解的直觉）+ PEFT 库入门
@@ -1497,9 +1498,9 @@ W_new = W_original + B × A（其中 A 和 B 的秩远小于 W）
 阶段三综合复盘
 
 > 🏁 **最后的终极验收**：
-> 
+>
 > **凌晨 3 点把你叫醒，你能做到吗？**
-> 
+>
 1. 手写一遍 Transformer forward（白板默写！不查代码！）
    x = embedding(tokens) + positional_encoding
    for layer in layers:

@@ -47,13 +47,16 @@
                 {% for task in tasks %}
                     <li class="task-item {% if task.completed %}completed{% endif %}">
                         <!-- 完成圆圈按钮 -->
-                        <a
-                            href="{% url 'task_toggle' task.pk %}"
-                            class="toggle-btn {% if task.completed %}done{% endif %}"
-                            title="{% if task.completed %}标记为未完成{% else %}标记为已完成{% endif %}"
-                        >
-                            {% if task.completed %}✓{% endif %}
-                        </a>
+                        <form method="post" action="{% url 'task_toggle' task.pk %}">
+                            {% csrf_token %}
+                            <button
+                                type="submit"
+                                class="toggle-btn {% if task.completed %}done{% endif %}"
+                                title="{% if task.completed %}标记为未完成{% else %}标记为已完成{% endif %}"
+                            >
+                                {% if task.completed %}✓{% endif %}
+                            </button>
+                        </form>
 
                         <!-- 任务文字 -->
                         <div class="task-content">
@@ -64,12 +67,15 @@
                         </div>
 
                         <!-- 删除按钮 -->
-                        <a
-                            href="{% url 'task_delete' task.pk %}"
-                            class="delete-btn"
-                            onclick="return confirm('确定要删除「{{ task.title }}」吗？')"
-                            title="删除任务"
-                        >删除</a>
+                        <form method="post" action="{% url 'task_delete' task.pk %}">
+                            {% csrf_token %}
+                            <button
+                                type="submit"
+                                class="delete-btn"
+                                onclick="return confirm('确定要删除「{{ task.title }}」吗？')"
+                                title="删除任务"
+                            >删除</button>
+                        </form>
                     </li>
                 {% endfor %}
             </ul>
@@ -85,11 +91,15 @@
             <span>共 {{ total_count }} 项</span>
             <span class="done-count">✓ 已完成 {{ completed_count }} 项</span>
             {% if completed_count %}
-                <a href="{% url 'task_clear_completed' %}"
-                   class="clear-btn"
-                   onclick="return confirm('确定要清除所有已完成任务吗？')">
-                    🧹 清除已完成
-                </a>
+                <form method="post" action="{% url 'task_clear_completed' %}">
+                    {% csrf_token %}
+                    <button
+                        type="submit"
+                        class="clear-btn"
+                        onclick="return confirm('确定要清除所有已完成任务吗？')">
+                        🧹 清除已完成
+                    </button>
+                </form>
             {% endif %}
         </div>
 

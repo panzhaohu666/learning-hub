@@ -2,10 +2,10 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen)]()
-[![Total Lines](https://img.shields.io/badge/Total%20Lines-66%2C000-blue)]()
-[![Guides](https://img.shields.io/badge/Guides-16%20topics-orange)]()
-[![Est. Hours](https://img.shields.io/badge/Est.%20Hours-1%2C000%2B-red)]()
-[![Files](https://img.shields.io/badge/Files-29-purple)]()
+[![Total Lines](https://img.shields.io/badge/Total%20Lines-67%2C000-blue)]()
+[![Guides](https://img.shields.io/badge/Guides-13%20topics-orange)]()
+[![Est. Hours](https://img.shields.io/badge/Est.%20Hours-800%2B-red)]()
+[![Files](https://img.shields.io/badge/Files-28-purple)]()
 
 > 🏗️ 一个持续更新的**开源自学平台**，覆盖大模型开发、软件设计师备考、Linux运维、Django开发、Python全栈、数据库、API、网络协议。
 > 📱💻 手机阅读 + 电脑编码，全程不依赖视频。  
@@ -63,7 +63,7 @@ def chat():
 | 计划 | 时长 | 目标 | 每周投入 | 总时长 |
 |------|------|------|----------|--------|
 | 🧠 **6个月大模型学习计划** | 26 周 | 大模型开发工程师 / 算法工程师 | ~18.5h | 480h |
-| 📝 **软件设计师备考计划** | 9 个月 | 2027年5月软考 · 上下午45+ | ~8h | 259h |
+| 📝 **软件设计师备考计划** | 9 个月 | 2027年5月软考 · 上下午45+ | ~8h | 312h |
 
 ### 核心理念
 
@@ -127,7 +127,7 @@ RAG系统               DPO对齐/vLLM部署       MoE概念
 ```
 阶段一（8-10月）        阶段二（11-1月）         阶段三（2-5月）
 系统复习                重点突破                真题冲刺
-上午题12模块全过         下午题5题型逐个击破      16套真题×3轮
+上午题12模块全过         下午题5题型逐个击破      15套真题×3轮
 数据结构/算法/软工        DFD/ER图/UML/算法       全真模拟
 ```
 
@@ -158,7 +158,7 @@ learning-hub/
 │
 ├── 大模型学习/
 │   ├── 01-总纲-6个月大模型学习计划.md    ← 17章专业指南·7阶段·480h·Django风格
-│   ├── 02-学习资料清单.md               ← 80+ 篇资料（论文/文档/源码/博客）
+│   ├── 02-学习资料清单.md               ← 75 篇资料（论文/文档/源码/博客）
 │   ├── 03-阶段一-大模型开发入门.md      ← 第1-2周：LLM概念→ChatBot→ReAct Agent
 │   ├── 04-阶段二-大模型应用开发.md      ← 第3-7周：Python工程化→Pandas→Dify
 │   ├── 05-阶段三上-机器学习与PyTorch.md  ← 第8-11周：ML→PyTorch→手写LayerNorm
@@ -170,13 +170,15 @@ learning-hub/
 │
 ├── Django学习/
 │   ├── Django完全指南.md                 ← Django 6.0 从入门到部署
-│   └── Python全栈工程师-完整学习计划.md    ← 后端API→全栈Web→DevOps→微服务 9阶段
+│   ├── Python全栈工程师-完整学习计划.md    ← 后端API→全栈Web→DevOps→微服务 9阶段
+│   └── 待办事项应用/                       ← 完整 Django 项目（manage.py + tasks/ + todo_project/ + 操作文档.md）
 │
 ├── 数据库学习/
 │   └── 数据库操作指南.md                 ← MySQL/PG/Mongo/Redis/SQLite/SQL Server
 │
 ├── API学习/
-│   └── API完全指南.md                    ← 零基础：概念→HTTP→REST→认证→文档→实战→设计
+│   ├── API完全指南.md                    ← 零基础：概念→HTTP→REST→认证→文档→实战→设计
+│   └── demo/                             ← FastAPI 图书管理系统示例（server.py + README.md）
 │
 ├── 网络协议学习/
 │   └── 网络协议学习手册.md               ← TCP/IP四层模型：Ethernet/ARP/IP/CIDR/TCP/UDP/DNS/HTTP/TLS/CDN/负载均衡/代理/VPN/Docker网络等
@@ -330,14 +332,14 @@ cd learning-hub
 
 | 指标 | 数值 |
 |------|------|
-| 文件总数 | 29 个核心文件 |
-| 总行数 | 66,000 行 |
-| 大模型学习材料 | 80+ 篇（含论文、源码、文档链接） |
+| 文件总数 | 28 个 Markdown 文件（共 52 个文件） |
+| 总行数 | 67,401 行（66,086 行 Markdown + 1,315 行代码） |
+| 大模型学习材料 | 75 篇（含论文、源码、文档链接） |
 | 软考真题覆盖 | 近 8 年 15 套 |
 | 计划项目数 | 12+ 个 GitHub 项目 |
 | GPU 预算 | ¥2,000-4,000（半年） |
 | 每周学习时间 | ~18.5 小时（工作日手机 5h + 电脑 10h + 周六 3.5h） |
-| 总学习时间 | ~1,000 小时（含软考 + 基础前置） |
+| 总学习时间 | ~800+ 小时（480h 大模型 + 312h 软考 + 基础前置） |
 
 ---
 

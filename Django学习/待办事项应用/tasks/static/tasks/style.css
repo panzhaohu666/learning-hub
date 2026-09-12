@@ -348,3 +348,21 @@ body {
 .help-text ul {
     margin: 4px 0 0 16px;
 }
+
+/* ---- 状态变更按钮（POST 表单替代链接后保持原样式） ---- */
+button.toggle-btn,
+button.delete-btn,
+button.clear-btn {
+    font-family: inherit;
+    line-height: inherit;
+    cursor: pointer;
+}
+
+button.delete-btn {
+    border: none;
+    background: transparent;
+}
+
+button.clear-btn {
+    border: none;
+}

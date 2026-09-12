@@ -149,7 +149,7 @@ todo.py                 # 程序入口（argparse 解析）
 └── manager.py          # TaskManager 类（业务逻辑：添加/删除/搜索/统计）
 
 class Task:
-    def __init__(self, id, content, priority="medium", due=None, 
+    def __init__(self, id, content, priority="medium", due=None,
                  created=None, done=False):
         self.id = id
         self.content = content
@@ -388,7 +388,7 @@ r = requests.get("https://httpbin.org/get", params={"key": "value"})
 print(r.status_code, r.json())
 
 # POST JSON 数据
-r = requests.post("https://httpbin.org/post", 
+r = requests.post("https://httpbin.org/post",
                    json={"name": "张三", "age": 25})
 print(r.json())
 
@@ -665,14 +665,14 @@ EXPLAIN SELECT * FROM orders WHERE user_id = 5000;
 -- 看 type 列：ALL = 全表扫描, ref = 索引查找
 
 -- 复合条件查询
-EXPLAIN SELECT * FROM orders 
+EXPLAIN SELECT * FROM orders
 WHERE user_id = 5000 AND status = 'paid';
 -- 第1步：看 key 列，用到了哪个索引？
 -- 第2步：看 rows 列，预估扫描多少行？
 
 -- 排序 + 范围查询
-EXPLAIN SELECT * FROM orders 
-WHERE user_id BETWEEN 1000 AND 2000 
+EXPLAIN SELECT * FROM orders
+WHERE user_id BETWEEN 1000 AND 2000
 ORDER BY created_at DESC LIMIT 20;
 -- 第3步：看 Extra 列有没有 Using filesort（文件排序 → 慢！）
 ```
@@ -690,15 +690,15 @@ SELECT * FROM orders WHERE user_id = ?;
 SELECT * FROM orders WHERE user_id = ? AND status = ?;
 
 -- 查询C：按时间范围统计用户订单金额
-SELECT user_id, SUM(amount) as total 
-FROM orders 
-WHERE created_at BETWEEN ? AND ? 
+SELECT user_id, SUM(amount) as total
+FROM orders
+WHERE created_at BETWEEN ? AND ?
 GROUP BY user_id;
 
 -- 查询D：分页查某状态订单，按创建时间排序
-SELECT * FROM orders 
-WHERE status = ? 
-ORDER BY created_at DESC 
+SELECT * FROM orders
+WHERE status = ?
+ORDER BY created_at DESC
 LIMIT 20 OFFSET 0;
 
 -- 参考答案（自己先想！）
@@ -720,7 +720,7 @@ SELECT * FROM orders WHERE amount > 900;
 
 -- 优化思路：
 -- 1. 用 EXPLAIN 看 type 和 rows
--- 2. 确认是否需要加索引？amount 适合建索引吗？（不适合！离散度高）
+-- 2. 确认是否需要加索引？amount 离散度高，单独索引选择性好；但 amount > 900 是范围查询，可能返回大量行，优化器可能仍选全表扫描——是否建索引要看查询频率与返回比例
 -- 3. 如果是统计需求，考虑用汇总表或物化视图
 -- 4. 如果必须实时查，考虑分区表（按 created_at 分区）
 ```
@@ -1395,25 +1395,25 @@ function ArticleList() {
 
 ```
 ┌─────────────────────────────────────────────────┐
-│  服务器状态                                       │
-│  来源：API 返回的数据                              │
-│  工具：TanStack Query / SWR                      │
-│  特点：有缓存、有过期、需要重新请求                 │
-│  示例：文章列表、用户信息、下拉选项                  │
+│  服务器状态                                     │
+│  来源：API 返回的数据                           │
+│  工具：TanStack Query / SWR                     │
+│  特点：有缓存、有过期、需要重新请求             │
+│  示例：文章列表、用户信息、下拉选项             │
 └─────────────────────────────────────────────────┘
 ┌─────────────────────────────────────────────────┐
-│  客户端状态                                       │
-│  来源：用户交互产生的                              │
-│  工具：Zustand / useContext                       │
-│  特点：纯前端状态，不涉及服务端                     │
-│  示例：主题、侧边栏展开、表单草稿、购物车            │
+│  客户端状态                                     │
+│  来源：用户交互产生的                           │
+│  工具：Zustand / useContext                     │
+│  特点：纯前端状态，不涉及服务端                 │
+│  示例：主题、侧边栏展开、表单草稿、购物车       │
 └─────────────────────────────────────────────────┘
 ┌─────────────────────────────────────────────────┐
-│  URL 状态                                        │
-│  来源：URL 参数（searchParams / pathParams）       │
-│  工具：Next.js useSearchParams / React Router      │
-│  特点：可分享、可书签、可前进后退                    │
-│  示例：搜索关键词、分页页码、筛选条件、Tab 切换      │
+│  URL 状态                                       │
+│  来源：URL 参数（searchParams / pathParams）    │
+│  工具：Next.js useSearchParams / React Router   │
+│  特点：可分享、可书签、可前进后退               │
+│  示例：搜索关键词、分页页码、筛选条件、Tab 切换 │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -1604,7 +1604,7 @@ function ArticleList() {
 **场景 1：首次部署到阿里云 ECS**
 
 ```bash
-# 第1步：购买 ECS（最低配置：2核2G，CentOS 7.9 或 Ubuntu 22.04）
+# 第1步：购买 ECS（最低配置：2核2G，Rocky Linux 9 或 Ubuntu 22.04）
 # 第2步：安全组开放端口：22（SSH）、80（HTTP）、443（HTTPS）
 
 # 第3步：SSH 登录，安装基础环境
@@ -1684,8 +1684,9 @@ server {
         expires 7d;
     }
 
-    # API 反向代理
+    # API 反向代理（限制请求速率防 DDoS——limit_req_zone 见上方 http 上下文注释示例）
     location /api/ {
+        limit_req zone=api burst=20 nodelay;
         proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -1699,12 +1700,6 @@ server {
         alias /var/www/static/;
         expires 30d;
         add_header Cache-Control "public, immutable";
-    }
-
-    # 限制请求速率（防 DDoS）——limit_req_zone 见上方 http 上下文注释示例
-    location /api/ {
-        limit_req zone=api burst=20 nodelay;
-        # ... proxy_pass 配置同上
     }
 }
 ```
@@ -1754,7 +1749,7 @@ server {
 
 □ CI/CD
   □ 能写 GitHub Actions workflow（测试 + 构建 + 部署）
-  □ 理解 CI/CD 三阶段：Continuous Integration（自动化测试）→ 
+  □ 理解 CI/CD 三阶段：Continuous Integration（自动化测试）→
     Continuous Delivery（自动化构建镜像）→ Continuous Deployment（自动化部署）
 
 □ 监控
@@ -1902,30 +1897,30 @@ docker-compose 编排所有服务 + MySQL + Redis + RabbitMQ
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│              传统微服务通信                            │
-│                                                       │
-│  Service A ──HTTP──▶ Service B                        │
-│              │                                        │
-│              ├── 重试逻辑（A 自己写）                   │
-│              ├── 超时设置（A 自己写）                   │
-│              └── 熔断降级（A 自己写）                   │
-│                                                       │
-│  问题：每个服务都要写这些，逻辑散落各处                   │
+│              传统微服务通信                         │
+│                                                     │
+│  Service A ──HTTP──▶ Service B                      │
+│              │                                      │
+│              ├── 重试逻辑（A 自己写）               │
+│              ├── 超时设置（A 自己写）               │
+│              └── 熔断降级（A 自己写）               │
+│                                                     │
+│  问题：每个服务都要写这些，逻辑散落各处             │
 └─────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────┐
-│              Service Mesh（以 Istio 为例）             │
-│                                                       │
-│  Service A ──▶ Sidecar Proxy ──▶ Sidecar Proxy ──▶ Service B
-│                  (Envoy)            (Envoy)           │
-│                                                       │
-│  所有流量经过 Sidecar，由它处理：                        │
-│  □ 自动重试        □ 超时控制                          │
-│  □ 熔断降级        □ 负载均衡                          │
-│  □ TLS 加密通信    □ 流量镜像（灰度发布）               │
-│  □ 分布式追踪      □ 指标采集（Prometheus）             │
-│                                                       │
-│  核心概念：把「通信的横切关注点」从业务代码中剥离         │
+│              Service Mesh（以 Istio 为例）          │
+│                                                     │
+│Service A ▶ Sidecar Proxy ▶ Sidecar Proxy ▶ Service B│
+│               (Envoy)         (Envoy)               │
+│                                                     │
+│  所有流量经过 Sidecar，由它处理：                   │
+│  □ 自动重试        □ 超时控制                       │
+│  □ 熔断降级        □ 负载均衡                       │
+│  □ TLS 加密通信    □ 流量镜像（灰度发布）           │
+│  □ 分布式追踪      □ 指标采集（Prometheus）         │
+│                                                     │
+│  核心概念：把「通信的横切关注点」从业务代码中剥离   │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -1934,17 +1929,17 @@ docker-compose 编排所有服务 + MySQL + Redis + RabbitMQ
 ### 📊 微服务可观测性三大支柱
 
 ```
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│    Logging   │  │   Metrics    │  │   Tracing    │
-│    日志       │  │   指标        │  │   链路追踪    │
-├──────────────┤  ├──────────────┤  ├──────────────┤
-│ 发生了什么     │  │ 量化指标       │  │ 请求怎么走的  │
-│ "用户登录失败" │  │ "QPS 下降了30%"│  │ "A→B→C→DB"  │
-├──────────────┤  ├──────────────┤  ├──────────────┤
-│ 工具：        │  │ 工具：        │  │ 工具：        │
-│ structlog    │  │ Prometheus   │  │ Jaeger       │
-│ + Loki       │  │ + Grafana    │  │ / Zipkin     │
-└──────────────┘  └──────────────┘  └──────────────┘
+┌────────────────┐  ┌────────────────┐  ┌────────────────┐
+│    Logging     │  │    Metrics     │  │    Tracing     │
+│      日志      │  │      指标      │  │    链路追踪    │
+├────────────────┤  ├────────────────┤  ├────────────────┤
+│   发生了什么   │  │    量化指标    │  │  请求怎么走的  │
+│ "用户登录失败" │  │"QPS 下降了30%" │  │   "A→B→C→DB"   │
+├────────────────┤  ├────────────────┤  ├────────────────┤
+│     工具：     │  │     工具：     │  │     工具：     │
+│   structlog    │  │   Prometheus   │  │     Jaeger     │
+│     + Loki     │  │   + Grafana    │  │    / Zipkin    │
+└────────────────┘  └────────────────┘  └────────────────┘
 
 一个请求出问题时，排查路径：
 1. Metrics → 看到 QPS 突降 / P99 延迟飙升（发现异常）
@@ -2186,7 +2181,7 @@ CREATE TABLE articles (
 CREATE INDEX idx_articles_content_vector ON articles USING GIN(content_vector);
 
 -- 自动更新 tsvector（触发器）
-CREATE TRIGGER trg_articles_vector 
+CREATE TRIGGER trg_articles_vector
 BEFORE INSERT OR UPDATE ON articles
 FOR EACH ROW EXECUTE FUNCTION
 tsvector_update_trigger(content_vector, 'pg_catalog.simple', content);
@@ -2215,21 +2210,21 @@ ORDER BY rank DESC;
 **README 技术亮点章节模板（项目1）：**
 
 > ## 技术亮点
-> 
+>
 > ### 1. 全文搜索方案选型与性能对比
-> 
+>
 > 为博客的搜索功能，我分别用三种方案实现并进行了性能测试（2000 篇文章）：
-> 
+>
 > | 方案 | 平均响应时间 | QPS | 中文分词准确率 | 运维成本 |
 > |------|------------|-----|--------------|---------|
 > | LIKE | 850ms | 12 | 低 | 无 |
 > | PostgreSQL tsvector | 45ms | 220 | 中（需 zhparser） | 低 |
 > | Elasticsearch | 8ms | 1200 | 高 | 高（独立集群） |
-> 
+>
 > **选择理由**：初期数据量小（< 10 万篇），选择 PostgreSQL tsvector 方案，零额外运维成本。当数据量增长后，预留了迁移到 ES 的接口（搜索服务抽离为独立模块）。
-> 
+>
 > ### 2. 全链路 E2E 测试
-> 
+>
 > 使用 Playwright 模拟真实用户操作：登录 → 写文章(Markdown) → 发布 → 搜索 → 阅读。每次 PR 自动运行，保证核心流程不被破坏。
 
 ### 🏗️ 项目 2 详细实现指导：后台管理系统
@@ -2497,7 +2492,7 @@ async def seckill(product_id: str, current_user = Depends(get_current_user)):
 
 > 答案框架：
 > GIL（Global Interpreter Lock，全局解释器锁）是 CPython 的一个机制，它保证同一时刻只有一个线程在执行 Python 字节码。这导致 Python 多线程无法利用多核 CPU 做真正的并行计算。
-> 
+>
 > 但多线程在 Python 中并非无用：
 > - **IO 密集型任务**（网络请求、文件读写）：线程在等待 IO 时 GIL 会释放，其他线程可以运行，所以多线程对 IO 密集型有效。
 > - **CPU 密集型任务**：应该用 `multiprocessing`（多进程）来绕过 GIL。
@@ -2510,7 +2505,7 @@ async def seckill(product_id: str, current_user = Depends(get_current_user)):
 
 > 答案框架：
 > 装饰器本质是一个接受函数作为参数、返回新函数的高阶函数。Python 的 `@decorator` 语法糖等价于 `func = decorator(func)`。
-> 
+>
 > 我在项目中用装饰器做了：
 > - 计时器：`@timer` 自动记录函数执行时间
 > - 重试：`@retry(max=3, delay=1)` 处理临时性的网络错误
@@ -2536,11 +2531,11 @@ async def seckill(product_id: str, current_user = Depends(get_current_user)):
 
 > 答案框架：
 > `__new__` 创建实例（分配内存），`__init__` 初始化实例（设置属性）。`__new__` 先于 `__init__` 执行。
-> 
+>
 > 实际中用到的场景：
 > - **单例模式**：在 `__new__` 里控制只创建一个实例
 > - **继承不可变类型**：如 `class UpperStr(str): def __new__(cls, value): return super().__new__(cls, value.upper())`
-> 
+>
 > 我在项目中的配置管理用了模块级单例（Python 模块天然单例），比覆写 `__new__` 更 Pythonic。
 
 #### 数据库（必问 3 题）
@@ -2552,7 +2547,7 @@ async def seckill(product_id: str, current_user = Depends(get_current_user)):
 > 1. **高度低**：百万级数据 B+ 树只有 3-4 层，查找只需 3-4 次磁盘 IO
 > 2. **叶子节点有序链表**：范围查询非常高效（比如 `WHERE id BETWEEN 1000 AND 2000`）
 > 3. **数据都在叶子节点**：查询任何数据 IO 次数稳定
-> 
+>
 > 对比：
 > - 红黑树：高度高（百万数据 ~20 层），磁盘 IO 多
 > - Hash：不支持范围查询，且 Hash 冲突时退化为链表
@@ -2579,9 +2574,9 @@ async def seckill(product_id: str, current_user = Depends(get_current_user)):
 
 > 答案框架：
 > 四个隔离级别：读未提交 → 读已提交 → 可重复读 → 串行化（隔离性递增，性能递减）。
-> 
+>
 > MySQL InnoDB 默认是**可重复读**（REPEATABLE READ），通过 MVCC（多版本并发控制）实现。
-> 
+>
 > 常见问题：
 > - 脏读（Dirty Read）：读到未提交的数据 — 可重复读已解决
 > - 不可重复读：同一事务两次读结果不同 — 可重复读已解决
@@ -2606,14 +2601,14 @@ async def seckill(product_id: str, current_user = Depends(get_current_user)):
 
 > 答案框架：
 > 秒杀的核心矛盾：**瞬时极高并发 vs 有限库存**。
-> 
+>
 > 优化路径（分层解耦）：
 > 1. **前端**：按钮置灰、倒计时、验证码（分散用户点击时间）
 > 2. **网关层**：Nginx 限流（limit_req），直接拒绝超出容量的请求
 > 3. **应用层**：Redis 预扣库存 + Lua 脚本保证原子性（核心）
 > 4. **异步化**：扣库存成功后发 MQ → 异步创建订单（削峰填谷）
 > 5. **数据库**：最终同步 Redis 的扣减结果到 MySQL
-> 
+>
 > 我的项目中对比了三种方案：直连 MySQL（QPS 150）、MySQL+悲观锁（QPS 80）、Redis+MQ（QPS 5000），优化了 33 倍。这里面最关键的是把「同步写 MySQL」变成了「先 Redis 扣库存 + 异步写 MySQL」。
 
 #### 项目阐述（STAR 法则）
@@ -2640,15 +2635,15 @@ async def seckill(product_id: str, current_user = Depends(get_current_user)):
 
 > 答案框架：
 > 每个技术选型都要结合**具体场景**来说，不存在绝对的好坏。
-> 
+>
 > 我的项目是 API 服务（博客后台、电商微服务），需要：
 > - 高性能异步（FastAPI 基于 Starlette + asyncio）
 > - 自动 API 文档（Swagger 自动生成，前后端协作方便）
 > - 类型安全（Pydantic 校验 + TypeScript 前端类型打通）
-> 
+>
 > Django 更适合「内容管理系统」「后台管理」这类需要快速出页面的场景（Admin 后台开箱即用）。
 > 我的后台管理前端用的是 Next.js + Ant Design，不需要 Django 的模板系统，所以选 FastAPI。
-> 
+>
 > **核心原则**：选择适合项目需求的技术，不是选「最新的」或「最流行的」。
 
 ### 🐛 阶段 9 常见踩坑记录

@@ -257,6 +257,7 @@ myproject/
 模型是数据的 **唯一、权威来源**，每个模型对应数据库中的一张表。
 ```python
 # blog/models.py
+from django.conf import settings
 from django.db import models
 
 
@@ -285,6 +286,11 @@ class Post(models.Model):
     title = models.CharField(max_length=200, verbose_name='标题')
     slug = models.SlugField(unique=True, verbose_name='URL 别名')
     content = models.TextField(verbose_name='内容')
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name='作者'
+    )
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,
@@ -1229,6 +1235,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
+from django.utils.http import url_has_allowed_host_and_scheme
 
 
 def login_view(request):
@@ -1241,7 +1248,10 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             messages.success(request, f'欢迎回来, {user.username}!')
-            return redirect(request.GET.get('next', 'blog:post_list'))
+            next_url = request.GET.get('next')
+            if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+                next_url = 'blog:post_list'
+            return redirect(next_url)
     else:
         form = AuthenticationForm()
 
@@ -1577,8 +1587,7 @@ SECURE_CSP = {
     "font-src": ["'self'"],
     # 禁止 iframe 被嵌入
     "frame-ancestors": ["'none'"],
-    # 只报告不拦截（调试阶段，上线后去掉此行即可开启拦截）
-    # "report_only": True,
+    # 只报告不拦截：调试阶段应使用独立的 SECURE_CSP_REPORT_ONLY 配置，上线后移除该配置即可开启拦截
 }
 ```
 **安全配置速查**（Django 自带 + 推荐的安保护）：
@@ -2005,19 +2014,13 @@ DATABASES = {
 # 静态文件
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# 邮件配置（Django 6.0 新式 API）
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.smtp.EmailBackend',
-        'OPTIONS': {
-            'host': 'smtp.example.com',
-            'port': 587,
-            'use_tls': True,
-            'username': 'your-email@example.com',
-            'password': 'your-password',
-        },
-    },
-}
+# 邮件配置
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.example.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your-email@example.com'
+EMAIL_HOST_PASSWORD = 'your-password'
 ```
 
 发送邮件示例：
@@ -2195,8 +2198,6 @@ CMD ["gunicorn", "myproject.wsgi:application", "--bind", "0.0.0.0:8000", "--work
 
 ```yaml
 # docker-compose.yml
-version: '3.8'
-
 services:
   web:
     build: .
@@ -2348,7 +2349,7 @@ def get_top_posts():
     cache_key = 'top_posts_10'
     result = cache.get(cache_key)
     if result is None:
-        result = Post.objects.filter(status='published').order_by('-views')[:10]
+        result = Post.objects.filter(status='published').order_by('-created_at')[:10]
         cache.set(cache_key, result, timeout=300)  # 缓存 5 分钟
     return result
 
@@ -2371,7 +2372,7 @@ def get_top_posts():
 ### 17.2 代码格式化
 推荐配置，保证团队代码风格统一。
 ```bash
-pip install black isort flake8
+pip install black isort flake8 flake8-pyproject
 ```
 
 ```ini
@@ -2384,7 +2385,7 @@ target-version = ['py312']
 profile = "black"
 line_length = 100
 
-[tool.flake8]
+[tool.flake8]  # 需安装 flake8-pyproject 插件才能读取 pyproject.toml
 max-line-length = 100
 exclude = ["migrations", "venv", ".git", "__pycache__"]
 ```

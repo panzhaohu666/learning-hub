@@ -297,10 +297,10 @@ BaseChatMessageHistory：存消息的底层（可以存内存/Redis/数据库）
     from langchain_community.chat_message_histories import ChatMessageHistory
     from langchain_core.output_parsers import StrOutputParser
 
-llm = ChatOpenAI(model="deepseek-v4-flash", api_key="你的Key",
-base_url="https://api.deepseek.com")
+    llm = ChatOpenAI(model="deepseek-v4-flash", api_key="你的Key",
+                     base_url="https://api.deepseek.com")
 
-# 定义一个带"历史占位符"的 Prompt
+    # 定义一个带"历史占位符"的 Prompt
     # MessagesPlaceholder：一个"槽位"，运行时会把历史消息插入到这里
     prompt = ChatPromptTemplate.from_messages([
         ("system", "你是友好的AI助手，用中文回复"),
@@ -308,19 +308,19 @@ base_url="https://api.deepseek.com")
         ("user", "{input}")
     ])
 
-chain = prompt | llm | StrOutputParser()
+    chain = prompt | llm | StrOutputParser()
 
-# ===== Memory 管理 =====
+    # ===== Memory 管理 =====
     # 用一个字典存储不同 session 的历史
     store = {}
 
-def get_history(session_id):
+    def get_history(session_id):
         """根据 session_id 获取对应的对话历史对象"""
         if session_id not in store:
             store[session_id] = ChatMessageHistory()
         return store[session_id]
 
-# RunnableWithMessageHistory：把 Memory 包装到 Chain 上
+    # RunnableWithMessageHistory：把 Memory 包装到 Chain 上
     chain_with_history = RunnableWithMessageHistory(
         chain,              # 原始的 chain
         get_history,        # 获取历史的函数
@@ -328,17 +328,17 @@ def get_history(session_id):
         history_messages_key="history" # chain 的输入中哪个字段是历史
     )
 
-# ===== 测试多轮对话 =====
+    # ===== 测试多轮对话 =====
     session_config = {"configurable": {"session_id": "user_A"}}
 
-# 第一轮
+    # 第一轮
     resp = chain_with_history.invoke(
         {"input": "我叫小明，我喜欢打篮球"},
         config=session_config
     )
     print(f"Bot: {resp}")
 
-# 第二轮：不用再告诉它名字，它应该记得
+    # 第二轮：不用再告诉它名字，它应该记得
     resp = chain_with_history.invoke(
         {"input": "我叫什么名字？我的爱好是什么？"},
         config=session_config
@@ -346,7 +346,7 @@ def get_history(session_id):
     print(f"Bot: {resp}")
     # 应该输出 "你叫小明，喜欢打篮球"
 
-# ===== 验证隔离：另一个 session 不知道小明 =====
+    # ===== 验证隔离：另一个 session 不知道小明 =====
     resp = chain_with_history.invoke(
         {"input": "我叫什么名字？"},
         config={"configurable": {"session_id": "user_B"}}
@@ -411,12 +411,12 @@ LangChain 的 @tool 装饰器自动从 Python 函数的 type hints 和 docstring
     from langchain_openai import ChatOpenAI
     from langchain_core.messages import HumanMessage, ToolMessage
 
-# ===== 定义工具 =====
+    # ===== 定义工具 =====
     # @tool 装饰器：把函数变成 Tool 对象
     # docstring 就是工具的 description，LLM 靠这个判断何时调用
 
-@tool
-def get_weather(city: str) -> str:
+    @tool
+    def get_weather(city: str) -> str:
         """获取指定城市的天气信息。输入城市名称（如北京）。"""
         weather_data = {
             "北京": "晴，25°C，湿度 40%",
@@ -425,16 +425,22 @@ def get_weather(city: str) -> str:
         }
         return weather_data.get(city, f"暂无{city}的天气数据")
 
-@tool
-def calculator(expression: str) -> str:
+    @tool
+    def calculator(expression: str) -> str:
         """计算数学表达式。输入如 35*12 或 (100+200)/3。"""
+        # ⚠️ LLM 的输出不可信：eval 前先用 ast 校验，只允许数字和运算符
+        import ast
+        allowed = (ast.Expression, ast.Constant, ast.BinOp, ast.UnaryOp,
+                   ast.Load, ast.operator, ast.unaryop)
+        if not all(isinstance(node, allowed) for node in ast.walk(ast.parse(expression, mode="eval"))):
+            return "只支持数字和 + - * / ** 运算"
         try:
             return str(eval(expression))
         except Exception as e:
             return f"计算错误: {e}"
 
-@tool
-def search_knowledge(query: str) -> str:
+    @tool
+    def search_knowledge(query: str) -> str:
         """在内部知识库中搜索信息。输入搜索关键词。"""
         knowledge = {
             "退货政策": "7天内无理由退货，商品需保持原包装",
@@ -445,17 +451,17 @@ def search_knowledge(query: str) -> str:
                 return value
         return f"未找到关于{query}的信息"
 
-# ===== 绑定工具到 LLM =====
+    # ===== 绑定工具到 LLM =====
     tools = [get_weather, calculator, search_knowledge]
     llm = ChatOpenAI(model="deepseek-v4-flash", api_key="你的Key",
                      base_url="https://api.deepseek.com")
     llm_with_tools = llm.bind_tools(tools)
 
-# ===== 单轮工具调用测试 =====
+    # ===== 单轮工具调用测试 =====
     messages = [HumanMessage(content="北京今天天气怎么样？")]
     response = llm_with_tools.invoke(messages)
 
-# 检查 LLM 是否决定调用工具
+    # 检查 LLM 是否决定调用工具
     if response.tool_calls:
         for tool_call in response.tool_calls:
             print(f"模型决定调用: {tool_call['name']}({tool_call['args']})")
@@ -471,11 +477,11 @@ def search_knowledge(query: str) -> str:
     def chat_with_tools(user_input):
         messages = [HumanMessage(content=user_input)]
 
-# 第一轮：模型决定是否调工具
+        # 第一轮：模型决定是否调工具
         response = llm_with_tools.invoke(messages)
         messages.append(response)
 
-# 如果模型要调工具，逐个执行
+        # 如果模型要调工具，逐个执行
         if response.tool_calls:
             for tool_call in response.tool_calls:
                 # 找到对应的工具函数
@@ -486,13 +492,13 @@ def search_knowledge(query: str) -> str:
                 # 把工具结果加入消息
                 messages.append(ToolMessage(content=result, tool_call_id=tool_call["id"]))
 
-# 第二轮：把工具结果发给模型，生成最终回复
+            # 第二轮：把工具结果发给模型，生成最终回复
             final_response = llm.invoke(messages)
             print(f"Bot: {final_response.content}")
         else:
             print(f"Bot: {response.content}")
 
-# 测试
+    # 测试
     chat_with_tools("北京天气如何？")
     chat_with_tools("计算 156 * 38")
     chat_with_tools("你们的退货政策是什么？")
@@ -669,7 +675,6 @@ Chunk Overlap（重叠）：
 
 prompt = ChatPromptTemplate.from_messages([
 ("system", system_prompt),
-MessagesPlaceholder(variable_name="chat_history"),
 ("user", "{input}")
 ])
 
@@ -779,8 +784,9 @@ LangGraph 的 Graph 是"有分支的图"：A→B→条件判断→C或D→E
         return {"query": new_query.content}
 
     def generate(state: RAGState):
-        response = rag_chain.invoke({"input": state["query"]})
-        return {"answer": response["answer"]}
+        # 直接基于 retrieve 节点产出的 documents 生成，避免重复检索
+        answer = combine_docs_chain.invoke({"context": state["documents"], "input": state["query"]})
+        return {"answer": answer}
 
     workflow = StateGraph(RAGState)
     workflow.add_node("retrieve", retrieve)
@@ -1283,7 +1289,7 @@ torch.multinomial（按概率采样）vs torch.argmax（只选最高概率）—
             self.c_proj = nn.Linear(4 * d_model, d_model)  # 压缩回来
             self.dropout = nn.Dropout(dropout)
         def forward(self, x):
-            return self.c_proj(self.gelu(self.c_fc(x)))
+            return self.dropout(self.c_proj(self.gelu(self.c_fc(x))))
 
     class Block(nn.Module):
         def __init__(self, d_model, n_heads, block_size, dropout):
@@ -1580,6 +1586,7 @@ LoRA(r=8)：  ΔW = B(768×8) × A(8×768) = 12,288 个参数
 
 星期四：QLoRA（4-bit 量化 + LoRA，8GB 显存微调 7B 模型！）
 ```python
+    import torch
     from transformers import BitsAndBytesConfig
     bnb_config = BitsAndBytesConfig(
         load_in_4bit=True,
@@ -1733,7 +1740,7 @@ PagedAttention（像 OS 分页）：
 
 部署 + 压测：
 ```bash
-    python -m vllm.entrypoints.openai.api_server --model ./my-model --port 8000
+    vllm serve ./my-model --port 8000
 ```
 
 **完整压测脚本**：
@@ -2177,14 +2184,15 @@ attn @ V: (batch, n_heads, seq_len, seq_len) @ (batch, n_heads, seq_len, d_k)
 - "Attention Is All You Need" 论文
 - GPT-2/GPT-3 论文
 - LoRA / QLoRA 论文
-- Anthropic 的 RLHF / DPO 论文
+- RLHF 论文（OpenAI / DeepMind, Christiano et al.）+ DPO 论文（Stanford, Rafailov et al.）
 - vLLM 论文 (PagedAttention)
 - Flash Attention 论文
 
 **研究级**：
 - LLaMA 1/2/3 论文
 - Chinchilla Scaling Laws
-- The "Sparks of AGI" paper (GPT-4 technical report)
+- "Sparks of AGI" 论文（Microsoft, Bubeck et al.）
+- GPT-4 技术报告（OpenAI）
 - Mixture of Experts (MoE) 论文
 - CLIP / BLIP-2 / LLaVA 等多模态论文
 
@@ -2465,28 +2473,28 @@ Chip Huyen (@chipro):           ML 系统设计专家、"Designing ML Systems" �
 │                                                 │
 │   🎓 大模型工程师自学计划 · 完成证书 🎓         │
 │                                                 │
-│   兹证明 [你的名字] 同学                          │
+│   兹证明 [你的名字] 同学                        │
 │                                                 │
-│   在过去的 26 周中，利用碎片时间和夜晚，           │
-│   完成了以下全部 7 个阶段的学习：                    │
+│   在过去的 26 周中，利用碎片时间和夜晚，        │
+│   完成了以下全部 7 个阶段的学习：               │
 │                                                 │
-│   ✅ 阶段一：LLM 开发入门（2周）                   │
-│   ✅ 阶段二：大模型应用开发（5周）                  │
-│   ✅ 阶段三：大模型核心开发技术（9周）★             │
-│   ✅ 阶段四：Agent 智能体开发（3周）                │
-│   ✅ 阶段五：大模型定制开发（5周）★                 │
-│   ✅ 阶段六：算法进阶（1周）                        │
-│   ✅ 阶段七：大厂面试专题（1周+）                   │
+│   ✅ 阶段一：LLM 开发入门（2周）                │
+│   ✅ 阶段二：大模型应用开发（5周）              │
+│   ✅ 阶段三：大模型核心开发技术（9周）★         │
+│   ✅ 阶段四：Agent 智能体开发（3周）            │
+│   ✅ 阶段五：大模型定制开发（5周）★             │
+│   ✅ 阶段六：算法进阶（1周）                    │
+│   ✅ 阶段七：大厂面试专题（1周+）               │
 │                                                 │
-│   掌握了从 Prompt 工程到模型训练部署的完整技能树     │
-│   具备了独立构建大模型应用和微调开源模型的能力       │
+│   掌握了从 Prompt 工程到模型训练部署的完整技能树│
+│   具备了独立构建大模型应用和微调开源模型的能力  │
 │                                                 │
-│   授予称号：大模型开发工程师                        │
+│   授予称号：大模型开发工程师                    │
 │                                                 │
-│   日期：[今天的日期]                               │
-│   签名：[你自己]  🖊️                              │
+│   日期：[今天的日期]                            │
+│   签名：[你自己]  🖊️                            │
 │                                                 │
-│   "480 小时认真用，比 700 小时磨洋工强得多。"       │
+│   "480 小时认真用，比 700 小时磨洋工强得多。"   │
 │                                                 │
 └─────────────────────────────────────────────────┘
 ```
@@ -2668,7 +2676,7 @@ A (2×4) = [[i, j, k, l],
 2. 减小 block_size（256 → 128 → 64）
 3. 用梯度累积模拟大 batch：accumulation_steps=4, batch_size=2 → 等效 bs=8
 4. 减小模型：d_model=256→128, n_layers=6→4
-5. 用混合精度训练：torch.cuda.amp.autocast()
+5. 用混合精度训练：torch.amp.autocast('cuda')
 6. 用 QLoRA 4-bit 量化（仅微调时）
 7. 换更大的 GPU 或租用云端 GPU
 ```
@@ -2947,7 +2955,7 @@ ollama pull qwen2:0.5b && ollama run qwen2:0.5b
 pip install wandb && wandb login && wandb.init(project="my-gpt")
 
 # vLLM 部署
-python -m vllm.entrypoints.openai.api_server --model ./model --port 8000
+vllm serve ./model --port 8000
 curl http://localhost:8000/v1/chat/completions -d '{"model":"my-model","messages":[{"role":"user","content":"hello"}]}'
 
 # Git 工作流
@@ -3019,7 +3027,7 @@ CLIP:           4亿图文对训练 → 学会"理解图片内容"，还能 zero
 | Attention(Q,K,V) = softmax(QK^T/sqrt(d_k))V | Attention 核心 | 第20周 |
 | x = x + Attn(LN(x))  | Pre-LN 残差连接 | 第20周 |
 | delta_W = B × A, rank=r | LoRA 低秩分解 | 第22周 |
-| L_DPO = -log(sigma(beta*(log P(c)-log P(r)))) | DPO 损失 | 第23周 |
+| L_DPO = -log sigma(beta*(log(P(c)/P_ref(c)) - log(P(r)/P_ref(r)))) | DPO 损失 | 第23周 |
 | P(seq) = prod_i P(w_i\|w_{i-1},...,w_1) | 自回归生成 | 第20周 |
 | cos(A,B) = A·B/(\|A\|\|B\|) | 余弦相似度（RAG检索） | 第18周 |
 
