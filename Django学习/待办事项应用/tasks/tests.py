@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db.utils import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
 
@@ -10,7 +11,9 @@ class TaskModelTests(TestCase):
         self.user = User.objects.create_user(username='alice', password='pw-alice-123')
 
     def test_user_field_is_required(self):
-        with self.assertRaises(Exception):
+        # 断言必须是 IntegrityError，不能写成 Exception：后者会把测试自身的
+        # 笔误、导入错误、拼错字段名一律算作通过。
+        with self.assertRaises(IntegrityError):
             Task.objects.create(title='没有归属的任务')
 
     def test_str_returns_title(self):
