@@ -19,7 +19,10 @@
         <!-- 用户信息栏 -->
         <div class="user-bar">
             <span class="user-name">👤 {{ request.user.username }}</span>
-            <a href="{% url 'logout' %}" class="logout-btn">登出</a>
+            <form method="post" action="{% url 'logout' %}" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">登出</button>
+            </form>
         </div>
 
         <!-- 添加任务卡片 -->

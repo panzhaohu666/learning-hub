@@ -1,0 +1,11 @@
+# 待办事项应用（Django）依赖
+# 环境：Python 3.12+（Django 6.1 要求 >=3.12），实测 3.13.0
+#
+# 安装：
+#   python -m venv .venv
+#   .venv\Scripts\activate        (Windows)
+#   source .venv/bin/activate     (Linux / macOS)
+#   pip install -r requirements.txt
+#
+# 全部锁死版本，避免 "clone 后 pip install django 装到最新版" 导致行为不一致。
+Django==6.1.3

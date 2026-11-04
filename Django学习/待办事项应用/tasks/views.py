@@ -34,8 +34,13 @@ def user_login(request):
     return render(request, 'tasks/login.html')
 
 
+@require_POST
 def user_logout(request):
-    """用户登出"""
+    """用户登出。
+
+    只接受 POST：GET 能被浏览器预取、图片 src、外链等触发，
+    那样用户会在不知情的情况下被登出（会话被销毁）。
+    """
     logout(request)
     return redirect('login')
 
@@ -56,12 +61,12 @@ def task_list(request):
 def task_create(request):
     """创建新任务"""
     if request.method == 'POST':
-        title = request.POST.get('title')
+        title = (request.POST.get('title') or '').strip()
         if title:
             Task.objects.create(
                 user=request.user,
                 title=title,
-                description=request.POST.get('description', '')
+                description=(request.POST.get('description') or '').strip()
             )
     return redirect('task_list')
 
