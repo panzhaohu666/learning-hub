@@ -106,7 +106,7 @@ def main() -> int:
     if args.markdown:
         print('| 指标 | 实测值 |')
         print('|------|--------|')
-        print(f'| 文件总数 | {stats["total_files"]} 个（{stats["md_files"]} 个 Markdown + {stats["code_files"]} 个代码文件） |')
+        print(f'| 文件总数 | {stats["total_files"]} 个（{stats["md_files"]} 个 Markdown + {stats["code_files"]} 个代码文件 + {stats["other_files"]} 个其他） |')
         print(f'| Markdown 行数 | {stats["md_lines"]:,} |')
         print(f'| 代码行数 | {stats["code_lines"]:,} |')
         print(f'| 其他文件行数 | {stats["other_lines"]:,} |')
