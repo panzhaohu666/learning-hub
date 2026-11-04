@@ -166,3 +166,35 @@ class AuthViewTests(TestCase):
     def test_login_with_correct_password_redirects(self):
         response = self.client.post(reverse('login'), {'username': 'alice', 'password': 'pw-alice-123'})
         self.assertRedirects(response, reverse('task_list'))
+
+    def test_login_missing_username_returns_page_not_500(self):
+        # request.POST['username'] 缺字段会抛 KeyError → 500。表单被裁剪、
+        # 用户禁用 JS 或被中间件改写时都可能真的发出这种请求。
+        response = self.client.post(reverse('login'), {'password': 'pw-alice-123'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '用户名和密码不能为空')
+
+    def test_login_with_next_redirects_to_next(self):
+        # next 必须指向一个「默认跳转不会去」的地址，否则旧代码无条件
+        # redirect('task_list') 也能让这条通过，测不出 next 有没有生效。
+        target = reverse('register')
+        self.assertNotEqual(target, reverse('task_list'))
+        response = self.client.post(
+            reverse('login'),
+            {'username': 'alice', 'password': 'pw-alice-123', 'next': target},
+        )
+        self.assertRedirects(response, target)
+
+    def test_login_next_rejects_external_host(self):
+        # 开放重定向：next 指向外部站点时必须落回默认页，不能照着跳。
+        response = self.client.post(
+            reverse('login'),
+            {'username': 'alice', 'password': 'pw-alice-123', 'next': 'https://evil.example/steal'},
+        )
+        self.assertRedirects(response, reverse('task_list'))
+
+    def test_login_form_carries_next_into_hidden_field(self):
+        target = reverse('register')
+        response = self.client.get(reverse('login'), {'next': target})
+        self.assertContains(response, 'name="next"')
+        self.assertContains(response, f'value="{target}"')
