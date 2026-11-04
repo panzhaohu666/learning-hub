@@ -1,0 +1,12 @@
+# 图书管理 API demo 依赖
+# 环境：Python 3.10+（fastapi / uvicorn 均要求 >=3.10），实测 3.13.0
+#
+# 安装：
+#   python -m venv .venv
+#   .venv\Scripts\activate        (Windows)
+#   source .venv/bin/activate     (Linux / macOS)
+#   pip install -r requirements.txt
+#
+# 2026-11 实测通过：7 个业务端点（列表/详情/新增/修改/删除/统计/首页）+ 422 校验 + 404 + 204，共 13 个场景。
+fastapi==0.162.0
+uvicorn==0.54.0
