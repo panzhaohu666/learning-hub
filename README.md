@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen)]()
-[![Total Lines](https://img.shields.io/badge/Total%20Lines-68%2C562-blue)]()
+[![Total Lines](https://img.shields.io/badge/Total%20Lines-68%2C703-blue)]()
 [![Guides](https://img.shields.io/badge/Guides-13%20topics-orange)]()
 [![Est. Hours](https://img.shields.io/badge/Est.%20Hours-558%2B-red)]()
 [![Files](https://img.shields.io/badge/Files-61-purple)]()
@@ -416,10 +416,10 @@ cd learning-hub
 | 指标 | 实测值 |
 |------|--------|
 | 文件总数 | 61 个（33 个 Markdown + 23 个代码文件 + 5 个其他） |
-| Markdown 行数 | 66,801 |
+| Markdown 行数 | 66,942 |
 | 代码行数 | 1,653 |
 | 其他文件行数 | 108 |
-| 总行数 | 68,562 |
+| 总行数 | 68,703 |
 | 大模型学习材料 | 75 篇（条目数已核：`02-学习资料清单.md` 里 A1-1 ~ A7-x 共 75 个条目，属实） |
 | 计划项目数 | 12 个（全部为「计划」，已交付 2 个可运行项目） |
 | GPU 预算 | ¥2,000-4,000（半年） |
