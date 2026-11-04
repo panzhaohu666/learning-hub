@@ -60,11 +60,20 @@ body {
     font-weight: 500;
 }
 
+.logout-form {
+    display: inline;
+    margin: 0;
+}
+
 .logout-btn {
+    font-family: inherit;
     font-size: 13px;
     color: #999;
     text-decoration: none;
     padding: 4px 12px;
+    border: none;
+    background: none;
+    cursor: pointer;
     border-radius: 6px;
     transition: all 0.2s;
 }

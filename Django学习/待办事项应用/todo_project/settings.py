@@ -10,22 +10,43 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def env_bool(name, default=False):
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in ('1', 'true', 'yes', 'on')
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%y5+e63(o^20$!(r66utm-7+6(s1s7a(9cf2=9!86+rm(=j@*2'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env_bool('DJANGO_DEBUG', True)
 
-ALLOWED_HOSTS = []
+# SECURITY WARNING: keep the secret key used in production secret!
+# 生产环境必须通过环境变量 DJANGO_SECRET_KEY 注入；缺失时拒绝启动。
+# 开发环境允许降级到内置的固定 key，方便 clone 后直接 runserver。
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'django-insecure-dev-only-not-for-production'
+    else:
+        raise RuntimeError(
+            'DJANGO_SECRET_KEY 未设置。DEBUG=False 时必须通过环境变量提供密钥，'
+            '例如：export DJANGO_SECRET_KEY="$(python -c \'import secrets;'
+            'print(secrets.token_urlsafe(50))\')"'
+        )
+
+ALLOWED_HOSTS = [
+    h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',') if h.strip()
+]
 
 
 # Application definition

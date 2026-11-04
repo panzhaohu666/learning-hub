@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from .models import Task
@@ -21,21 +22,38 @@ def user_register(request):
 
 
 def user_login(request):
-    """用户登录"""
+    """用户登录。
+
+    用 request.POST.get 而不是 request.POST[...]：后者缺字段时抛 KeyError
+    直接变 500。next 参数用于登录后跳回原页面，必须校验目标主机，
+    否则是开放重定向（攻击者构造 ?next=https://evil.example 把人导出去）。
+    """
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+        if not username or not password:
+            messages.error(request, '用户名和密码不能为空')
+            return render(request, 'tasks/login.html', {'next': request.POST.get('next', '')})
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            next_url = request.POST.get('next') or request.GET.get('next')
+            if next_url and url_has_allowed_host_and_scheme(
+                next_url, allowed_hosts={request.get_host()}
+            ):
+                return redirect(next_url)
             return redirect('task_list')
-        else:
-            messages.error(request, '用户名或密码错误')
-    return render(request, 'tasks/login.html')
+        messages.error(request, '用户名或密码错误')
+    return render(request, 'tasks/login.html', {'next': request.GET.get('next', '')})
 
 
+@require_POST
 def user_logout(request):
-    """用户登出"""
+    """用户登出。
+
+    只接受 POST：GET 能被浏览器预取、图片 src、外链等触发，
+    那样用户会在不知情的情况下被登出（会话被销毁）。
+    """
     logout(request)
     return redirect('login')
 
@@ -56,12 +74,12 @@ def task_list(request):
 def task_create(request):
     """创建新任务"""
     if request.method == 'POST':
-        title = request.POST.get('title')
+        title = (request.POST.get('title') or '').strip()
         if title:
             Task.objects.create(
                 user=request.user,
                 title=title,
-                description=request.POST.get('description', '')
+                description=(request.POST.get('description') or '').strip()
             )
     return redirect('task_list')
 
